@@ -26,7 +26,7 @@ module Zypper
       end
 
       def backup
-        filename = File.join([@backup_path, "Backup-repos-#{Time.now.to_s.delete(': +-')[0..-5]}.tgz"])
+        filename = File.join(@backup_path, "repos-backup-#{Time.now.to_s.delete(': +-')[0..-5]}.tgz")
         raise InvalidPermissions, filename unless File.writable? @backup_path
         Minitar.pack('/etc/zypp/repos.d',
                      Zlib::GzipWriter.new(File.open(filename, 'wb'))) 
