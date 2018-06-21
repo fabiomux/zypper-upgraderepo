@@ -10,7 +10,7 @@ module Zypper
       def initialize(options)
         @os_release = OsRelease.new(options)
         @repos = RepositoryList.new(options)
-        @hint = options.hint
+        @print_hint = options.hint
       end
 
       def backup
@@ -48,16 +48,19 @@ module Zypper
       private
 
       def check_repos(version)
-        Messages.header
+        Messages.header(@repos.max_col)
         @repos.list.each_with_index do |r, i|
           Messages.separator
           if r.available?
-            Messages.available i.next, r.name, r.url
+            Messages.available i.next, r.name, r.url, @repos.max_col
           elsif r.redirected?
-            Messages.redirect i.next, r.name, r.url, r.redirected_to
+            Messages.redirect i.next, r.name, r.url, @repos.max_col, r.redirected_to
           elsif r.not_found?
-            Messages.not_found i.next, r.name, r.url
-            Messages.alternatives r.evaluate_alternative(version) if @hint
+            if @print_hint
+              Messages.alternative i.next, r.name, r.url, @repos.max_col, r.evaluate_alternative(version)
+            else
+              Messages.not_found i.next, r.name, r.url, @repos.max_col
+            end
           end
         end
         Messages.footer

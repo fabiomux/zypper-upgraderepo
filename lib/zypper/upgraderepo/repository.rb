@@ -8,7 +8,7 @@ module Zypper
 
 
     class RepositoryList
-      attr_reader :list
+      attr_reader :list, :max_col
 
       def initialize(options)
         @alias = options.alias
@@ -22,6 +22,7 @@ module Zypper
           next if options.only_enabled && (!r.enabled?)
           @list << r
         end
+        @max_col = @list.max_by { |x| x.name.length }.name.length
       end
 
       def backup
