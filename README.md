@@ -11,9 +11,7 @@ Install it as:
 
     $ gem install zypper-upgraderepo
 
-If you want integrate it to zypper as plugin watch the zypper-upgraderepo-plugin project:
-
-    https://github.com/fabiomux/zypper-upgraderepo-plugin
+If you want to install it as zypper plugin watch the _zypper-upgraderepo-plugin_ project linked below.
 
 ## Usage
 
@@ -38,12 +36,7 @@ Where to start:
 More Help:
 
 - The wiki page: https://github.com/fabiomux/zypper-upgraderepo
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+- zypper-upgraderepo-plugin project: https://github.com/fabiomux/zypper-upgraderepo-plugin
 
 ## Contributing
 
