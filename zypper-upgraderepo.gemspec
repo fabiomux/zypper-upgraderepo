@@ -12,7 +12,17 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Zypper addon to check and upgrade local repositories.}
   spec.description   = %q{This is just a complement to zypper command which helps to upgrade the local repositories before executing zypper dup.}
   spec.homepage      = "https://github.com/fabiomux/zypper-upgraderepo"
-  spec.license       = "GPL v.3"
+  spec.license       = "GPL-3.0"
+
+  spec.metadata      = {
+    "bug_tracker_uri"   => "https://github.com/fabiomux/zypper-upgraderepo/issues",
+    "changelog_uri"     => "",
+    "documentation_uri" => "https://www.rubydoc.info/gems/zypper-upgraderepo/#{spec.version}",
+    "homepage_uri"      => "https://github.com/fabiomux/zypper-upgraderepo",
+    "mailing_list_uri"  => "",
+    "source_code_uri"   => "https://github.com/fabiomux/zypper-upgraderepo",
+    "wiki_uri"          => "https://github.com/fabiomux/zypper-upgraderepo/wiki"
+  }
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
