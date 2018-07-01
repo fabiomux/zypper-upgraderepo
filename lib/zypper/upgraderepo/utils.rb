@@ -30,18 +30,18 @@ module Zypper
 
       def self.error(e)
         if e.class == String
-          puts '[E] '.bold.red + e
+          puts ' [E] '.bold.red + e
         else
           STDERR.puts 'Error! '.bold.red + e.message
         end
       end
 
       def self.ok(m)
-        puts '[V] '.bold.green + m
+        puts ' [V] '.bold.green + m
       end
 
       def self.warning(m)
-        puts '[W] '.bold.yellow + m
+        puts ' [W] '.bold.yellow + m
       end
 
       def self.available(num, name, url, max_col)
@@ -50,7 +50,7 @@ module Zypper
 
       def self.redirected(num, name, url, max_col, redirected)
         Messages.warning("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | Redirection of #{url} ")
-        puts "\t | #{ ' ' * max_col} | #{'To:'.bold.yellow} #{redirected}"
+        puts " #{' ' * 3} | #{' ' * 2} | #{ ' ' * max_col} | #{'To:'.bold.yellow} #{redirected}"
       end
 
       def self.not_found(num, name, url, max_col)
@@ -59,7 +59,7 @@ module Zypper
 
       def self.alternative(num, name, url, max_col, res)
         Messages.error("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | #{res[:message].bold.yellow}")
-        puts "\t | #{' ' * max_col} | #{res[:url]}" unless res[:url].to_s.empty?
+        puts " #{' ' * 3} | #{' ' * 2} | #{' ' * max_col} | #{res[:url]}" unless res[:url].to_s.empty?
       end
 
       def self.separator
@@ -67,8 +67,7 @@ module Zypper
       end
 
       def self.header(max_col)
-        p max_col
-        puts " St |  # | #{'Name'.ljust(max_col, ' ')} | Hint"
+        puts " St. |  # | #{'Name'.ljust(max_col, ' ')} | Hint"
       end
 
       def self.footer
