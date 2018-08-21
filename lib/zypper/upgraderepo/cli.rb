@@ -20,7 +20,7 @@ module Zypper
         options.overrides = {}
         options.version = nil
         
-        OptionParser.new do |opt|
+        opt_parser = OptionParser.new do |opt|
 
           if ENV['ZYPPER_UPGRADEREPO']
             opt.banner = 'Usage: zypper upgraderepo [OPTIONS] [OPERATION]'
@@ -97,7 +97,13 @@ module Zypper
             end
           end
 
-        end.parse!(ARGV) 
+        end
+        
+        if ARGV.empty?
+          puts opt_parser; exit
+        else
+          opt_parser.parse!(ARGV)
+        end
 
         options
       end
