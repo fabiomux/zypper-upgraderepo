@@ -16,10 +16,10 @@ Gem::Specification.new do |spec|
 
   spec.metadata      = {
     "bug_tracker_uri"   => "https://github.com/fabiomux/zypper-upgraderepo/issues",
-    "changelog_uri"     => "",
+    #"changelog_uri"     => "",
     "documentation_uri" => "https://www.rubydoc.info/gems/zypper-upgraderepo/#{spec.version}",
     "homepage_uri"      => "https://github.com/fabiomux/zypper-upgraderepo",
-    "mailing_list_uri"  => "",
+    #"mailing_list_uri"  => "",
     "source_code_uri"   => "https://github.com/fabiomux/zypper-upgraderepo",
     "wiki_uri"          => "https://github.com/fabiomux/zypper-upgraderepo/wiki"
   }
