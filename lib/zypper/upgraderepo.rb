@@ -54,7 +54,7 @@ module Zypper
           if r.available?
             Messages.available i.next, r.name, r.url, @repos.max_col
           elsif r.redirected?
-            Messages.redirect i.next, r.name, r.url, @repos.max_col, r.redirected_to
+            Messages.redirected i.next, r.name, r.url, @repos.max_col, r.redirected_to
           elsif r.not_found?
             if @print_hint
               Messages.alternative i.next, r.name, r.url, @repos.max_col, r.evaluate_alternative(version)
