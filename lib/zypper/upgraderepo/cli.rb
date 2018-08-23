@@ -19,6 +19,7 @@ module Zypper
         options.hint = true
         options.overrides = {}
         options.version = nil
+        options.sort_by = :alias
         
         opt_parser = OptionParser.new do |opt|
 
@@ -80,6 +81,14 @@ module Zypper
 
           opt.on('--override-url <NUMBER>,<URL>', Array, 'Overwrite the repository\'s url NUMBER with URL') do |r|
             options.overrides[r[0]] = r[1]
+          end
+
+          opt.on('--sort-by-alias', 'Sort repositories by alias (Default)') do |o|
+            options.sort_by = :alias
+          end
+
+          opt.on('--sort-by-name', 'Sort repositories by name') do |o|
+            options.sort_by = :name
           end
 
           unless ENV['ZYPPER_UPGRADEREPO']

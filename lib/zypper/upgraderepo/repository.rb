@@ -17,12 +17,14 @@ module Zypper
         @list = []
         @backup_path = options.backup_path
 
-        Dir.glob('/etc/zypp/repos.d/*.repo').sort.each do |i|
+        Dir.glob('/etc/zypp/repos.d/*.repo').each do |i|
           r = Repository.new(i)
           next if options.only_enabled && (!r.enabled?)
           @list << r
         end
         @max_col = @list.max_by { |x| x.name.length }.name.length
+
+        @list.sort_by! { |x| x.send(options.sort_by) } 
       end
 
       def backup
