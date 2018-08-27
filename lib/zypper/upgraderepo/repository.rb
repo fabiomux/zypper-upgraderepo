@@ -24,7 +24,8 @@ module Zypper
         end
         @max_col = @list.max_by { |x| x.name.length }.name.length
 
-        @list.sort_by! { |x| x.send(options.sort_by) } 
+        @list.sort_by! { |x| x.alias }
+        @list.sort_by! { |x| x.send(options.sort_by) } if options.sort_by != :alias
       end
 
       def backup
@@ -78,6 +79,10 @@ module Zypper
 
       def name=(value)
         @repo[@key]['name'] = value
+      end
+
+      def priority
+        @repo[@key]['priority'] || 99
       end
 
       def url

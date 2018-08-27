@@ -91,6 +91,10 @@ module Zypper
             options.sort_by = :name
           end
 
+          opt.on('--sort-by-priority', 'Sort repositories by priority') do |o|
+            options.sort_by = :priority
+          end
+
           unless ENV['ZYPPER_UPGRADEREPO']
             opt.separator ''
             opt.separator 'Other:'
