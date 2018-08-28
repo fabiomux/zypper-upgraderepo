@@ -44,22 +44,22 @@ module Zypper
         puts ' [W] '.bold.yellow + m
       end
 
-      def self.available(num, name, url, max_col)
-        Messages.ok("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} |")
+      def self.available(num, name, url, enabled, max_col)
+        Messages.ok("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | #{enabled ? ' Y ' : ' N '} |")
       end
 
-      def self.redirected(num, name, url, max_col, redirected)
-        Messages.warning("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | Redirection of #{url} ")
+      def self.redirected(num, name, url, enabled, max_col, redirected)
+        Messages.warning("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | #{enabled ? ' Y ' : ' N '} | Redirection of #{url} ")
         puts " #{' ' * 3} | #{' ' * 2} | #{ ' ' * max_col} | #{'To:'.bold.yellow} #{redirected}"
       end
 
-      def self.not_found(num, name, url, max_col)
-        Messages.error("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')}")
+      def self.not_found(num, name, url, enabled, max_col)
+        Messages.error("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | #{enabled ? ' Y ' : ' N '} |")
       end
 
-      def self.alternative(num, name, url, max_col, res)
-        Messages.error("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | #{res[:message].bold.yellow}")
-        puts " #{' ' * 3} | #{' ' * 2} | #{' ' * max_col} | #{res[:url]}" unless res[:url].to_s.empty?
+      def self.alternative(num, name, url, enabled, max_col, res)
+        Messages.error("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | #{enabled ? ' Y ' : ' N '} | #{res[:message].bold.yellow}")
+        puts " #{' ' * 3} | #{' ' * 2} | #{' ' * max_col} | #{' ' * 3} | #{res[:url]}" unless res[:url].to_s.empty?
       end
 
       def self.separator
@@ -67,7 +67,7 @@ module Zypper
       end
 
       def self.header(max_col)
-        puts " St. |  # | #{'Name'.ljust(max_col, ' ')} | Hint"
+        puts " St. |  # | #{'Name'.ljust(max_col, ' ')} | En. | Hint"
       end
 
       def self.footer
