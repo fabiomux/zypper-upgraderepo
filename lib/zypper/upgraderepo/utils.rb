@@ -44,22 +44,26 @@ module Zypper
         puts ' [W] '.bold.yellow + m
       end
 
-      def self.available(num, name, url, enabled, max_col)
-        Messages.ok("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | #{enabled ? ' Y ' : ' N '} |")
+    end
+
+    class TableView
+
+      def self.available(num, repo, max_col)
+        Messages.ok("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} |")
       end
 
-      def self.redirected(num, name, url, enabled, max_col, redirected)
-        Messages.warning("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | #{enabled ? ' Y ' : ' N '} | Redirection of #{url} ")
+      def self.redirected(num, repo, max_col, redirected)
+        Messages.warning("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | Redirection of #{repo.url} ")
         puts " #{' ' * 3} | #{' ' * 2} | #{ ' ' * max_col} | #{'To:'.bold.yellow} #{redirected}"
       end
 
-      def self.not_found(num, name, url, enabled, max_col)
-        Messages.error("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | #{enabled ? ' Y ' : ' N '} |")
+      def self.not_found(num, repo, max_col)
+        Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} |")
       end
 
-      def self.alternative(num, name, url, enabled, max_col, res)
-        Messages.error("| #{num.to_s.rjust(2)} | #{name.ljust(max_col, ' ')} | #{enabled ? ' Y ' : ' N '} | #{res[:message].bold.yellow}")
-        puts " #{' ' * 3} | #{' ' * 2} | #{' ' * max_col} | #{' ' * 3} | #{res[:url]}" unless res[:url].to_s.empty?
+      def self.alternative(num, repo, max_col, alt)
+        Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | #{alt[:message].bold.yellow}")
+        puts " #{' ' * 3} | #{' ' * 2} | #{' ' * max_col} | #{' ' * 3} | #{alt[:url]}" unless alt[:url].to_s.empty?
       end
 
       def self.separator
@@ -72,6 +76,56 @@ module Zypper
 
       def self.footer
         self.separator
+      end
+    end
+
+
+    class ReportView
+      
+      def self.available(num, repo, max_col)
+        puts " #{num.to_s.rjust(2).bold.green} | Status: #{'Ok'.bold.green}"
+        self.info(repo)
+      end
+
+      def self.redirected(num, repo, max_col, redirected)
+        puts " #{num.to_s.rjust(2).bold.yellow} | Status: #{'Redirected'.bold.yellow}"
+        puts " #{' ' * 2} | #{'To:'.bold.yellow} #{redirected}"
+        self.info(repo)
+      end
+
+      def self.not_found(num, repo, max_col)
+        puts " #{num.to_s.rjust(2).bold.red} | Status: #{'Not Found'.bold.red}"
+        self.info(repo)
+      end
+
+      def self.alternative(num, repo, max_col, alt)
+        puts " #{num.to_s.rjust(2).bold.red} | Status: #{'Not Found'.bold.red}"
+        puts " #{' ' * 2} | Hint: #{alt[:message].bold.yellow}"
+        puts " #{' ' * 2} | Alternative: #{alt[:url]}" unless alt[:url].to_s.empty?
+        self.info(repo)
+      end
+
+      def self.separator
+        puts '-' * 90
+      end
+
+      def self.header(max_col)
+        puts "  # | Report"
+      end
+
+      def self.footer
+        self.separator
+      end
+
+      private
+
+      def self.info(repo)
+        puts " #{ ' ' * 2 } | Name: #{repo.name}"
+        puts " #{ ' ' * 2 } | Alias: #{repo.alias}"
+        puts " #{ ' ' * 2 } | Url: #{repo.url}"
+        puts " #{ ' ' * 2 } | Priority: #{repo.priority}"
+        puts " #{ ' ' * 2 } | #{repo.enabled? ? 'Enabled: Yes' : 'Enabled: No'.yellow}"
+        puts " #{ ' ' * 2 } | Filename: #{repo.filename}"
       end
     end
 
