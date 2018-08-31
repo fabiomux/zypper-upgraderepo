@@ -13,7 +13,7 @@ module Zypper
         options = OpenStruct.new
         options.operation = :check_current
         options.backup_path = ENV['HOME']
-        options.only_enabled = true
+        options.only_enabled = false
         options.alias = true
         options.name = true
         options.hint = true
