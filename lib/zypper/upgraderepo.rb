@@ -11,6 +11,7 @@ module Zypper
         @os_release = OsRelease.new(options)
         @repos = RepositoryList.new(options)
         @print_hint = options.hint
+        @view_class = Object.const_get options.view.to_s.split(' ').map(&:capitalize).insert(0,'Zypper::Upgraderepo::').push('View').join
       end
 
       def backup
@@ -48,22 +49,25 @@ module Zypper
       private
 
       def check_repos(version)
-        Messages.header(@repos.max_col)
+        @view_class.header(@repos.max_col)
+
         @repos.list.each_with_index do |r, i|
-          Messages.separator
+          @view_class.separator
+
           if r.available?
-            Messages.available i.next, r.name, r.url, r.enabled?, @repos.max_col
+            @view_class.available i.next, r, @repos.max_col
           elsif r.redirected?
-            Messages.redirected i.next, r.name, r.url, r.enabled?, @repos.max_col, r.redirected_to
+            @view_class.redirected i.next, r, @repos.max_col, r.redirected_to
           elsif r.not_found?
             if @print_hint
-              Messages.alternative i.next, r.name, r.url, r.enabled?, @repos.max_col, r.evaluate_alternative(version)
+              @view_class.alternative i.next, r, @repos.max_col, r.evaluate_alternative(version)
             else
-              Messages.not_found i.next, r.name, r.url, r.enabled?, @repos.max_col
+              @view_class.not_found i.next, r, @repos.max_col
             end
           end
         end
-        Messages.footer
+
+        @view_class.footer
       end
 
     end

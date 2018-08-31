@@ -20,6 +20,7 @@ module Zypper
         options.overrides = {}
         options.version = nil
         options.sort_by = :alias
+        options.view = :table
         
         opt_parser = OptionParser.new do |opt|
 
@@ -93,6 +94,10 @@ module Zypper
 
           opt.on('--sort-by-priority', 'Sort repositories by priority') do |o|
             options.sort_by = :priority
+          end
+
+          opt.on('--report-view', 'View the data as report') do |o|
+            options.view = :report
           end
 
           unless ENV['ZYPPER_UPGRADEREPO']
