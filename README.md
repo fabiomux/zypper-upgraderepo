@@ -17,15 +17,15 @@ If you want to install it as zypper plugin watch the _zypper-upgraderepo-plugin_
 
 To check the availability of the current repositories:
 
-    $ zypper-upgraderepo -c
+    $ zypper-upgraderepo --check-current
 
 To check the availability of the next version repositories:
 
-    $ zypper-upgraderepo -n
+    $ zypper-upgraderepo --check-next
 
 To upgrade the repositories to the next version:
 
-    $ sudo zypper-upgraderepo -u
+    $ sudo zypper-upgraderepo --upgrade
 
 ## Get help
 
@@ -36,6 +36,10 @@ Where to start:
 More Help:
 
 - The wiki page: https://github.com/fabiomux/zypper-upgraderepo
+- openSUSE Lizards: https://lizards.opensuse.org/2018/08/07/zypper-upgraderepo-plugin-is-here/
+
+## Related projects
+
 - zypper-upgraderepo-plugin project: https://github.com/fabiomux/zypper-upgraderepo-plugin
 
 ## Contributing
