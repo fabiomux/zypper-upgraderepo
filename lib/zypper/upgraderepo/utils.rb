@@ -101,7 +101,7 @@ module Zypper
       def self.alternative(num, repo, max_col, alt)
         puts " #{num.to_s.rjust(2).bold.red} | Status: #{'Not Found'.bold.red}"
         puts " #{' ' * 2} | Hint: #{alt[:message].bold.yellow}"
-        puts " #{' ' * 2} | Alternative: #{alt[:url]}" unless alt[:url].to_s.empty?
+        puts " #{' ' * 2} | #{'Suggested:'.bold.yellow} #{alt[:url]}" unless alt[:url].to_s.empty?
         self.info(repo)
       end
 
