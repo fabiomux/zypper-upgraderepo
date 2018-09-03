@@ -8,7 +8,7 @@ module Zypper
 
       attr_reader :custom
 
-      OS_VERSIONS = ['13.1', '13.2', '42.1', '42.2', '42.3', '15.0']
+      OS_VERSIONS = ['13.1', '13.2', '42.1', '42.2', '42.3', '15.0', '15.1']
 
 
       def initialize(options)
