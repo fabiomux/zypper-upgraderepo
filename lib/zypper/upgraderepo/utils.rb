@@ -150,7 +150,7 @@ module Zypper
 
     class AlreadyUpgraded < StandardError
       def initialize(version)
-        super "The system is already upgraded to #{version}"
+        super "The system is already upgraded to the #{version} version"
       end
     end
 

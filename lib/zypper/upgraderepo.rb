@@ -24,7 +24,8 @@ module Zypper
       end
 
       def check_next
-        @repos.upgrade(@os_release.next) unless @os_release.last?
+        raise AlreadyUpgraded, 'latest' if @os_release.last?
+        @repos.upgrade(@os_release.next) 
         check_repos(@os_release.next)
       end
 
@@ -34,7 +35,8 @@ module Zypper
       end
 
       def upgrade
-        @repos.upgrade(@os_release.next) unless @os_release.last?
+        raise AlreadyUpgraded, 'latest' if @os_release.last?
+        @repos.upgrade(@os_release.next)
         @repos.save
         Messages.ok 'Repositories upgraded!'
       end
