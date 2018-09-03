@@ -159,20 +159,52 @@ module Zypper
         if not_found? 
           return traverse_url(uri, version)
         elsif available?
-          return {url: uri.to_s, message: 'Override with this one' } if uri.path =~ Regexp.new(version)
+          return {url: uri.to_s, message: 'Override with this one' } if uri.path =~ Regexp.new(version) && !search_repo(version).empty?
 
-          path = ping.body.to_s.scan(Regexp.new("href=\"[^\"]*#{version}[^\"]*\"")).uniq
-          unless path.empty?
-            uri.path += "#{path.pop.scan(/href="(.*)"/).pop.pop }"
+          path = search_path(version)
+          if path.empty?
+            return traverse_url(uri, version)
+          else
+            return traverse_url_forward(uri, version) if search_repo(version).empty?
+
+            uri.path += extract_path(path)
             return {url: uri.to_s, message: 'Override with this one' } 
           end
 
-          return {url: url, message: 'Can\'t find anything similar, try manually!' }
         end
           
       end
-    end
 
+      def traverse_url_forward(uri, version)
+        ping(uri, true)
+
+        if search_repo(version).empty?
+
+          path = search_path(version)
+          if path.empty?
+            return {url: '', message: 'Can\'t find anything similar, try manually!' }
+          else
+            uri.path += extract_path(path)
+            return traverse_url_forward(uri, version)
+          end
+        else
+          return {url: uri.to_s, message: 'Override with this one' }
+        end
+      end
+
+      def search_path(version)
+        ping.body.to_s.scan(Regexp.new("href=\"[^\"]*#{version}[^\"]*\"")).delete_if { |x| x =~ Regexp.new("\"#{URI(url).path}\"") }.uniq
+      end
+
+      def search_repo(version)
+        ping.body.to_s.scan(Regexp.new("href=\"[^\"]*#{version}[^\"]*\.repo\"|repodata/")).uniq
+      end
+
+      def extract_path(path)
+        "#{path.pop.scan(/href="(.*)"/).pop.pop}"
+      end
+
+    end
 
   end
 end
