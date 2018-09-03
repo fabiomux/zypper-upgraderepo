@@ -53,8 +53,8 @@ module Zypper
       end
 
       def self.redirected(num, repo, max_col, redirected)
-        Messages.warning("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | Redirection of #{repo.url} ")
-        puts " #{' ' * 3} | #{' ' * 2} | #{ ' ' * max_col} | #{'To:'.bold.yellow} #{redirected}"
+        Messages.warning("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | #{'Redirection'.bold.yellow} of #{repo.url} ")
+        puts " #{' ' * 3} | #{' ' * 2} | #{ ' ' * max_col} | #{ ' ' * 3 } | #{'To:'.bold.yellow} #{redirected}"
       end
 
       def self.not_found(num, repo, max_col)
