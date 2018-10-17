@@ -1,4 +1,5 @@
 require 'zypper/upgraderepo/repository'
+require 'zypper/upgraderepo/request'
 require 'zypper/upgraderepo/os_release'
 require 'zypper/upgraderepo/utils'
 

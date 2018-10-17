@@ -18,7 +18,7 @@ module Zypper
         @backup_path = options.backup_path
 
         Dir.glob('/etc/zypp/repos.d/*.repo').each do |i|
-          r = Repository.new(i)
+          r = RepositoryRequest.new(Repository.new(i), options.timeout)
           next if options.only_enabled && (!r.enabled?)
           @list << r
         end
@@ -102,109 +102,19 @@ module Zypper
         @key = get_key
       end
 
-      def available?
-        ping.is_a?(Net::HTTPSuccess)
-      end
-
-      def redirected?
-        ping.is_a?(Net::HTTPRedirection)
-      end
-
-      def redirected_to
-        ping['location']
-      end
-
-      def not_found?
-        ping.is_a?(Net::HTTPNotFound)
-      end
-
       def save
         raise InvalidPermissions, @filename unless File.writable? @filename
-        @repo.save(@filename) 
+        @repo.save(@filename)
       end
 
-      def evaluate_alternative(version)
-        if url =~ /dl\.google\.com/
-          return { url: '', message: 'Just Google security, use this repo anyway ;)'}
-        elsif not_found?
-          return traverse_url(URI(url.clone), version)
-        elsif redirected?
-          return { url: redirected_to, message: 'Redirected to:' }
-        end
-      end
 
       private
-
-      def ping(uri = URI(url), force = false)
-        begin
-          @res = Net::HTTP.get_response(uri) if @res.nil? || force
-        rescue SocketError
-          raise NoConnection
-        end
-        @res
-      end
 
       def get_key
         @repo.to_hash.keys.delete_if {|k| k == '0'}.pop
       end
-
-      def traverse_url(uri, version)
-        uri.path = File.dirname(uri.path)
-
-        return {url: '', message: 'None, try to find it manually'} if uri.path == '/'
-         
-        uri.path += '/'
-        ping(uri, true)
-
-        if not_found? 
-          return traverse_url(uri, version)
-        elsif available?
-          return {url: uri.to_s, message: 'Override with this one' } if uri.path =~ Regexp.new(version) && !search_repo(version).empty?
-
-          path = search_path(version)
-          if path.empty?
-            return traverse_url(uri, version)
-          else
-            return traverse_url_forward(uri, version) if search_repo(version).empty?
-
-            uri.path += extract_path(path)
-            return {url: uri.to_s, message: 'Override with this one' } 
-          end
-
-        end
-          
-      end
-
-      def traverse_url_forward(uri, version)
-        ping(uri, true)
-
-        if search_repo(version).empty?
-
-          path = search_path(version)
-          if path.empty?
-            return {url: '', message: 'Can\'t find anything similar, try manually!' }
-          else
-            uri.path += extract_path(path)
-            return traverse_url_forward(uri, version)
-          end
-        else
-          return {url: uri.to_s, message: 'Override with this one' }
-        end
-      end
-
-      def search_path(version)
-        ping.body.to_s.scan(Regexp.new("href=\"[^\"]*#{version}[^\"]*\"")).delete_if { |x| x =~ Regexp.new("\"#{URI(url).path}\"") }.uniq
-      end
-
-      def search_repo(version)
-        ping.body.to_s.scan(Regexp.new("href=\"[^\"]*#{version}[^\"]*\.repo\"|repodata/")).uniq
-      end
-
-      def extract_path(path)
-        "#{path.pop.scan(/href="(.*)"/).pop.pop}"
-      end
-
     end
+
 
   end
 end
