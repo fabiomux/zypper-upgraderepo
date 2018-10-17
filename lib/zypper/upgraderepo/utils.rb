@@ -31,6 +31,8 @@ module Zypper
       def self.error(e)
         if e.class == String
           puts ' [E] '.bold.red + e
+        elsif e.class == Interruption
+          STDERR.puts e.message =~ /\(/ ? e.message.gsub(/.*\((.*)\).*/, '\1').green : e.message.green
         else
           STDERR.puts 'Error! '.bold.red + e.message
         end
@@ -159,5 +161,15 @@ module Zypper
         super 'Internet connection has some trouble'
       end
     end
+
+    class Interruption < StandardError
+      def initialize
+        super 'Ok ok... Exiting!'
+      end
+    end
+
+    Signal.trap('INT') { raise Interruption }
+
+    Signal.trap('TERM') { raise Interruption }
   end
 end
