@@ -2,6 +2,7 @@ require 'zypper/upgraderepo/repository'
 require 'zypper/upgraderepo/request'
 require 'zypper/upgraderepo/os_release'
 require 'zypper/upgraderepo/utils'
+require 'zypper/upgraderepo/view'
 
 
 module Zypper
@@ -12,7 +13,7 @@ module Zypper
         @os_release = OsRelease.new(options)
         @repos = RepositoryList.new(options)
         @print_hint = options.hint
-        @view_class = Object.const_get options.view.to_s.split(' ').map(&:capitalize).insert(0,'Zypper::Upgraderepo::').push('View').join
+        @view_class = Zypper::Upgraderepo::View.const_get options.view.to_s.capitalize
       end
 
       def backup
@@ -26,7 +27,7 @@ module Zypper
 
       def check_next
         raise AlreadyUpgraded, 'latest' if @os_release.last?
-        @repos.upgrade(@os_release.next) 
+        @repos.upgrade(@os_release.next)
         check_repos(@os_release.next)
       end
 
