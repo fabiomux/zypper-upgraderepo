@@ -14,6 +14,7 @@ module Zypper
         @repos = RepositoryList.new(options)
         @print_hint = options.hint
         @view_class = Zypper::Upgraderepo::View.const_get options.view.to_s.capitalize
+        @list = options.list
       end
 
       def backup
@@ -56,6 +57,8 @@ module Zypper
         @view_class.header(@repos.max_col)
 
         @repos.list.each_with_index do |r, i|
+          next if @list && (!@list.include?(i.next))
+
           @view_class.separator
 
           if r.available?

@@ -21,7 +21,8 @@ module Zypper
         options.version = nil
         options.sort_by = :alias
         options.view = :table
-        
+        options.list = nil
+
         opt_parser = OptionParser.new do |opt|
 
           if ENV['ZYPPER_UPGRADEREPO']
@@ -66,6 +67,10 @@ module Zypper
 
           opt.on('--[no-]only-enabled', 'Include or not the disabled repositories') do |o|
             options.only_enabled = o
+          end
+
+          opt.on('--only-repo <NUMBER>[,NUMBER2,...]', 'Include only the repositories specified by NUMBER') do |o|
+            options.list = o.split(',').map(&:to_i)
           end
 
           opt.on('--[no-]name', 'Upgrade or not the name') do |o|
@@ -116,7 +121,7 @@ module Zypper
           end
 
         end
-        
+
         if ARGV.empty?
           puts opt_parser; exit
         else
@@ -129,7 +134,7 @@ module Zypper
     end
 
 
-    class CLI 
+    class CLI
       def self.start
         begin
           options = OptParseMain.parse(ARGV)
