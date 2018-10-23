@@ -1,13 +1,13 @@
 require 'iniparse'
-require 'net/http'
-require 'zlib'
-require 'minitar'
 
 module Zypper
   module Upgraderepo
 
 
     class RepositoryList
+
+      REPOSITORY_PATH = '/etc/zypp/repos.d'
+
       attr_reader :list, :max_col
 
       def initialize(options)
@@ -15,9 +15,8 @@ module Zypper
         @name = options.name
         @overrides = options.overrides
         @list = []
-        @backup_path = options.backup_path
 
-        Dir.glob('/etc/zypp/repos.d/*.repo').each do |i|
+        Dir.glob(File.join(REPOSITORY_PATH, '*.repo')).each do |i|
           r = RepositoryRequest.new(Repository.new(i), options.timeout)
           next if options.only_enabled && (!r.enabled?)
           @list << r
@@ -26,13 +25,6 @@ module Zypper
 
         @list.sort_by! { |x| x.alias }
         @list.sort_by! { |x| x.send(options.sort_by) } if options.sort_by != :alias
-      end
-
-      def backup
-        filename = File.join(@backup_path, "repos-backup-#{Time.now.to_s.delete(': +-')[0..-5]}.tgz")
-        raise InvalidPermissions, filename unless File.writable? @backup_path
-        Minitar.pack('/etc/zypp/repos.d',
-                     Zlib::GzipWriter.new(File.open(filename, 'wb'))) 
       end
 
       def upgrade(version)
@@ -57,11 +49,11 @@ module Zypper
 
     class Repository
       attr_reader :filename
- 
+
       def initialize(filename)
         @filename = filename
         @repo = IniParse.parse(File.read(filename))
-        @key = get_key 
+        @key = get_key
         @res = nil
       end
 

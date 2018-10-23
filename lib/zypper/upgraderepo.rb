@@ -3,6 +3,8 @@ require 'zypper/upgraderepo/request'
 require 'zypper/upgraderepo/os_release'
 require 'zypper/upgraderepo/utils'
 require 'zypper/upgraderepo/view'
+require 'zlib'
+require 'minitar'
 
 
 module Zypper
@@ -15,11 +17,17 @@ module Zypper
         @print_hint = options.hint
         @view_class = Zypper::Upgraderepo::View.const_get options.view.to_s.capitalize
         @list = options.list
+        @backup_path = options.backup_path
       end
 
       def backup
-        @repos.backup
-        Messages.ok 'Repository backup executed!'
+        filename = File.join(@backup_path, "repos-backup-#{Time.now.to_s.delete(': +-')[0..-5]}.tgz")
+
+        raise InvalidPermissions, filename unless File.writable? @backup_path
+
+        Minitar.pack(RepositoryList::REPOSITORY_PATH, Zlib::GzipWriter.new(File.open(filename, 'wb')))
+
+        Messages.ok "Backup file generated at #{filename.bold.green}"
       end
 
       def check_current
