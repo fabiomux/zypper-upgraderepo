@@ -37,7 +37,7 @@ module Zypper
       end
 
       def timeout?
-        ping.is_a?(Net::HTTPRequestTimeout)
+        ping.is_a?(Net::HTTPRequestTimeOut)
       end
 
       def status
@@ -72,6 +72,8 @@ module Zypper
           end
         rescue SocketError
           raise NoConnection
+        rescue Net::OpenTimeout
+          @page = Net::HTTPRequestTimeOut.new('1.1', '', '')
         end
         @page
       end

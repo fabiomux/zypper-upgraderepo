@@ -79,6 +79,8 @@ module Zypper
             else
               @view_class.not_found i.next, r, @repos.max_col
             end
+          elsif r.timeout?
+            @view_class.timeout i.next, r, @repos.max_col
           end
         end
 

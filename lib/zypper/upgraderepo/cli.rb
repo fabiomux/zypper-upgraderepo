@@ -22,6 +22,7 @@ module Zypper
         options.sort_by = :alias
         options.view = :table
         options.list = nil
+        options.timeout = 20.0
 
         opt_parser = OptionParser.new do |opt|
 
@@ -104,6 +105,11 @@ module Zypper
           opt.on('--report-view', 'View the data as report') do |o|
             options.view = :report
           end
+
+          opt.on('--timeout <SECONDS>', "Set the waiting SECONDS before to raise a timeout error (Default: #{options.timeout})") do |o|
+            options.timeout = o.to_f
+          end
+
 
           unless ENV['ZYPPER_UPGRADEREPO']
             opt.separator ''

@@ -28,6 +28,11 @@ module Zypper
           self.info(repo)
         end
 
+        def self.timeout(num, repo, max_col)
+          puts " #{num.to_s.rjust(2).bold.yellow} | Status: #{'Server Timeout'.bold.yellow}"
+          self.info(repo)
+        end
+
         def self.separator
           puts '-' * 90
         end
@@ -72,6 +77,10 @@ module Zypper
         def self.alternative(num, repo, max_col, alt)
           Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | #{alt[:message].bold.yellow}")
           puts " #{' ' * 3} | #{' ' * 2} | #{' ' * max_col} | #{' ' * 3} | #{alt[:url]}" unless alt[:url].to_s.empty?
+        end
+
+        def self.timeout(num, repo, max_col)
+          Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | #{'Server Timeout'.bold.yellow}")
         end
 
         def self.separator
