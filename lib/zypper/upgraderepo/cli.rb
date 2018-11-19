@@ -90,6 +90,13 @@ module Zypper
             options.overrides[r[0]] = r[1]
           end
 
+          opt.on('--timeout <SECONDS>', "Adjust the waiting SECONDS used to catch an HTTP Timeout Error (Default: #{options.timeout})") do |o|
+            options.timeout = o.to_f
+          end
+
+          opt.separator ''
+          opt.separator 'View options:'
+
           opt.on('--sort-by-alias', 'Sort repositories by alias (Default)') do |o|
             options.sort_by = :alias
           end
@@ -104,10 +111,6 @@ module Zypper
 
           opt.on('--report-view', 'View the data as report') do |o|
             options.view = :report
-          end
-
-          opt.on('--timeout <SECONDS>', "Set the waiting SECONDS before to raise a timeout error (Default: #{options.timeout})") do |o|
-            options.timeout = o.to_f
           end
 
 
