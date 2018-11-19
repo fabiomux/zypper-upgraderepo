@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    zypper-upgraderepo (1.1.0)
+    zypper-upgraderepo (1.2.0)
       iniparse
       minitar
 
@@ -36,4 +36,4 @@ DEPENDENCIES
   zypper-upgraderepo!
 
 BUNDLED WITH
-   1.16.2
+   1.17.1
