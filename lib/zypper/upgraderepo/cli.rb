@@ -21,7 +21,7 @@ module Zypper
         options.version = nil
         options.sort_by = :alias
         options.view = :table
-        options.list = nil
+        options.only_repo = nil
         options.timeout = 20.0
 
         opt_parser = OptionParser.new do |opt|
@@ -71,7 +71,7 @@ module Zypper
           end
 
           opt.on('--only-repo <NUMBER>[,NUMBER2,...]', 'Include only the repositories specified by NUMBER') do |o|
-            options.list = o.split(',').map(&:to_i)
+            options.only_repo = o.split(',').map(&:to_i)
           end
 
           opt.on('--[no-]name', 'Upgrade or not the name') do |o|
@@ -87,7 +87,7 @@ module Zypper
           end
 
           opt.on('--override-url <NUMBER>,<URL>', Array, 'Overwrite the repository\'s url NUMBER with URL') do |r|
-            options.overrides[r[0]] = r[1]
+            options.overrides[r[0].to_i] = r[1]
           end
 
           opt.on('--timeout <SECONDS>', "Adjust the waiting SECONDS used to catch an HTTP Timeout Error (Default: #{options.timeout})") do |o|

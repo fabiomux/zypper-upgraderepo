@@ -13,7 +13,7 @@ module Zypper
       def initialize(options)
         @alias = options.alias
         @name = options.name
-        @overrides = options.overrides
+        @only_repo = options.only_repo
         @list = []
 
         Dir.glob(File.join(REPOSITORY_PATH, '*.repo')).each do |i|
@@ -27,15 +27,11 @@ module Zypper
         @list.sort_by! { |x| x.send(options.sort_by) } if options.sort_by != :alias
       end
 
-      def upgrade(version)
+      def each_with_index
         @list.each_with_index do |repo, i|
-          if @overrides.has_key? i.next.to_s
-            repo.url = @overrides[i.next.to_s]
-          else
-            repo.url = repo.url.gsub(/\d\d\.\d/, version)
-          end
-          repo.alias = repo.alias.gsub(/\d\d\.\d/, version) if @alias
-          repo.name = repo.name.gsub(/\d\d\.\d/, version) if @name
+          next if @only_repo && !@only_repo.include?(i.next)
+
+          yield repo, i if block_given?
         end
       end
 
@@ -48,13 +44,15 @@ module Zypper
 
 
     class Repository
-      attr_reader :filename
+      attr_reader :filename, :old_url, :old_alias, :old_name
 
       def initialize(filename)
         @filename = filename
         @repo = IniParse.parse(File.read(filename))
         @key = get_key
-        @res = nil
+        @old_url = nil
+        @old_name = nil
+        @old_alias = nil
       end
 
       def enabled?
@@ -92,6 +90,25 @@ module Zypper
       def alias=(value)
         @repo = IniParse.parse(@repo.to_ini.sub(/\[[^\]]+\]/, "[#{value}]"))
         @key = get_key
+      end
+
+      def upgrade(version, args = {})
+        @old_url ||= self.url
+        @old_alias ||= self.alias
+        @old_name ||= self.name
+
+        if args[:url_override]
+          self.url = args[:url_override]
+        else
+          self.url = self.url.gsub(/\d\d\.\d/, version)
+        end
+
+        self.alias = self.alias.gsub(/\d\d\.\d/, version) if args[:alias]
+        self.name = self.name.gsub(/\d\d\.\d/, version) if args[:name]
+      end
+
+      def upgraded?(item = :url)
+        (!self.send("old_#{item}").nil?) && (self.send("old_#{item}") != self.send(item))
       end
 
       def save
