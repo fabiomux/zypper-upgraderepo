@@ -54,6 +54,7 @@ module Zypper
       end
 
       def upgrade_to
+        raise AlreadyUpgraded, @os_release.custom if @os_release.current?(@os_release.custom)
         upgrade_repos(@os_release.custom)
       end
 

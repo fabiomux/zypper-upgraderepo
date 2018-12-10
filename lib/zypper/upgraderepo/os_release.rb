@@ -24,7 +24,6 @@ module Zypper
 
         if options.version
           raise InvalidVersion, options.version unless OS_VERSIONS.include?(options.version)
-          raise AlreadyUpgraded, options.version unless OS_VERSIONS.index(options.version) != @current_idx
           @custom = options.version
         end
       end
@@ -59,6 +58,10 @@ module Zypper
 
       def valid?(version)
         OS_VERSIONS.include? version
+      end
+
+      def current?(version)
+        OS_VERSIONS.index(version) == @current_idx
       end
     end
 
