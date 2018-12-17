@@ -22,7 +22,7 @@ module Zypper
         options.sort_by = :alias
         options.view = :table
         options.only_repo = nil
-        options.timeout = 20.0
+        options.timeout = 10.0
 
         opt_parser = OptionParser.new do |opt|
 
@@ -66,24 +66,24 @@ module Zypper
           opt.separator ''
           opt.separator 'Options:'
 
-          opt.on('--[no-]only-enabled', 'Include or not the disabled repositories') do |o|
-            options.only_enabled = o
+          opt.on('--only-enabled', 'Include only the enabled repositories') do |o|
+            options.only_enabled = true
           end
 
           opt.on('--only-repo <NUMBER>[,NUMBER2,...]', 'Include only the repositories specified by NUMBER') do |o|
             options.only_repo = o.split(',').map(&:to_i)
           end
 
-          opt.on('--[no-]name', 'Upgrade or not the name') do |o|
-            options.name = o
+          opt.on('--no-name', 'Don\'t upgrade the name') do |o|
+            options.name = false
           end
 
-          opt.on('--[no-]alias', 'Upgrade or not the alias') do |o|
-            options.alias = o
+          opt.on('--no-alias', 'Don\'t upgrade the alias') do |o|
+            options.alias = false
           end
 
-          opt.on('--[no-]hint', 'Suggest a new url when the current is not found') do |o|
-            options.hint = o
+          opt.on('--no-hint', 'Don\'t find a working url when the current is invalid') do |o|
+            options.hint = false
           end
 
           opt.on('--override-url <NUMBER>,<URL>', Array, 'Overwrite the repository\'s url NUMBER with URL') do |r|
@@ -109,7 +109,7 @@ module Zypper
             options.sort_by = :priority
           end
 
-          opt.on('--report-view', 'View the data as report') do |o|
+          opt.on('--report', 'View the data as report') do |o|
             options.view = :report
           end
 
