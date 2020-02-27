@@ -164,7 +164,7 @@ module Zypper
           uri = URI(url)
         end
 
-        uri.path = uri.path.gsub(/\/$/, '') + '/repodata/repomd.xml' 
+        uri.path = uri.path.gsub(/\/$/, '') + '/repodata/repomd.xml'
 
         uri
       end
