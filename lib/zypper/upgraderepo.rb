@@ -58,6 +58,9 @@ module Zypper
         upgrade_repos(@os_release.custom)
       end
 
+      def reset
+        upgrade_repos(@os_release.current)
+      end
 
       private
 
