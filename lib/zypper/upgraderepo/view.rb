@@ -34,11 +34,7 @@ module Zypper
         end
 
         def self.upgraded(num, repo, max_col)
-          puts " #{num.to_s.rjust(2).bold.green} | #{'Upgraded'.bold.green}" #{'Upgraded from:'.bold.green} #{repo.old_url}"
-          #puts " #{' ' * 2} | Old Name: #{old_data[:name].yellow}" if old_data[:name] != repo.name
-          #puts " #{' ' * 2} | Old Alias: #{old_data[:alias].yellow}" if old_data[:alias] != repo.alias
-
-          #puts " #{' ' * 2} | Old URL: #{repo.old_url}"
+          puts " #{num.to_s.rjust(2).bold.green} | #{'Upgraded'.bold.green}"
           self.info(repo)
         end
 
@@ -51,7 +47,7 @@ module Zypper
           puts '-' * 90
         end
 
-        def self.header(max_col)
+        def self.header(max_col, upgrade = false)
           puts "  # | Report"
         end
 
