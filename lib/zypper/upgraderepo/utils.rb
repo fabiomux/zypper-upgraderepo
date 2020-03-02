@@ -61,9 +61,15 @@ module Zypper
       end
     end
 
-    class InvalidPermissions < StandardError
+    class InvalidWritePermissions < StandardError
       def initialize(filename)
         super "Don't have the right permission to write #{filename}"
+      end
+    end
+
+    class SystemUpdateRunning < StandardError
+      def initialize(args)
+        super "The application #{args[:process].bold} with pid #{args[:pid].bold} is running a system update!"
       end
     end
 

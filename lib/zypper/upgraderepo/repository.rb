@@ -112,12 +112,21 @@ module Zypper
       end
 
       def save
-        raise InvalidPermissions, @filename unless File.writable? @filename
+        raise InvalidWritePermissions, @filename unless File.writable? @filename
+        process, pid = libzypp_process
+        raise SystemUpdateRunning, { pid: pid, process: process } if pid
         @repo.save(@filename)
       end
 
 
       private
+
+      def libzypp_process
+        libpath = `ldd /usr/bin/zypper | grep "libzypp.so"`.split(' => ')[1].split(' ').shift
+        process = `sudo lsof #{libpath} | tail -n 1`
+        process, pid = process.split(' ')
+        [process, pid]
+      end
 
       def get_key
         @repo.to_hash.keys.delete_if {|k| k == '0'}.pop
