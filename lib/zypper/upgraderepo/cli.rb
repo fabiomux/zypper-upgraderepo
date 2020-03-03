@@ -113,6 +113,10 @@ module Zypper
             options.sort_by = :priority
           end
 
+          opt.on('--quiet', 'Quiet mode, show only error messages') do |o|
+            options.view = :quiet
+          end
+
           opt.on('--report', 'View the data as report') do |o|
             options.view = :report
           end

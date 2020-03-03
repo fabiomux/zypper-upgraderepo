@@ -116,7 +116,41 @@ module Zypper
         end
       end
 
-    end
 
+      class Quiet
+
+        def self.available(num, repo, max_col)
+        end
+
+        def self.redirected(num, repo, max_col, redirected)
+        end
+
+        def self.not_found(num, repo, max_col)
+        end
+
+        def self.alternative(num, repo, max_col, alt)
+        end
+
+        def self.timeout(num, repo, max_col)
+        end
+
+        def self.upgraded(num, repo, max_col) #, old_data)
+        end
+
+        def self.untouched(num, repo, max_col)
+        end
+
+        def self.separator
+        end
+
+        def self.header(max_col, upgrade = false)
+        end
+
+        def self.footer
+        end
+
+      end
+
+    end
   end
 end
