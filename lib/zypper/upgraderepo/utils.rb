@@ -73,6 +73,12 @@ module Zypper
       end
     end
 
+    class UnableToUpgrade < StandardError
+      def initialize(args)
+        super "The repository n.#{args[:num].to_s.bold.red} named #{args[:repo].name.bold.red} can't be upgraded, a manual check is required!"
+      end
+    end
+
     class AlreadyUpgraded < StandardError
       def initialize(version)
         super "The system is already upgraded to the #{version} version"

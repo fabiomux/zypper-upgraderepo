@@ -23,6 +23,7 @@ module Zypper
         options.view = :table
         options.only_repo = nil
         options.timeout = 10.0
+        options.exit_on_fail = false
 
         opt_parser = OptionParser.new do |opt|
 
@@ -69,6 +70,10 @@ module Zypper
 
           opt.separator ''
           opt.separator 'Options:'
+
+          opt.on('--exit-on-fail', 'Exit with error when a repository upgrade check fails') do |o|
+            options.exit_on_fail = true
+          end
 
           opt.on('--only-enabled', 'Include only the enabled repositories') do |o|
             options.only_enabled = true

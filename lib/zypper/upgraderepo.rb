@@ -21,6 +21,8 @@ module Zypper
         @upgrade_options = { alias: options.alias, name: options.name }
 
         @backup_path = options.backup_path
+
+        @exit_on_fail = options.exit_on_fail
       end
 
       def backup
@@ -73,16 +75,19 @@ module Zypper
 
           if r.available?
             @view_class.available i.next, r, @repos.max_col
-          elsif r.redirected?
-            @view_class.redirected i.next, r, @repos.max_col, r.redirected_to
-          elsif r.not_found?
-            if @print_hint
-              @view_class.alternative i.next, r, @repos.max_col, r.evaluate_alternative(version)
-            else
-              @view_class.not_found i.next, r, @repos.max_col
+          else
+            raise UnableToUpgrade, {num: i.next, repo: r} if @exit_on_fail
+            if r.redirected?
+              @view_class.redirected i.next, r, @repos.max_col, r.redirected_to
+            elsif r.not_found?
+              if @print_hint
+                @view_class.alternative i.next, r, @repos.max_col, r.evaluate_alternative(version)
+              else
+                @view_class.not_found i.next, r, @repos.max_col
+              end
+            elsif r.timeout?
+              @view_class.timeout i.next, r, @repos.max_col
             end
-          elsif r.timeout?
-            @view_class.timeout i.next, r, @repos.max_col
           end
         end
 
