@@ -151,6 +151,66 @@ module Zypper
 
       end
 
+
+      class Ini
+
+        def self.available(num, repo, max_col)
+          self.info num, 'Ok', repo
+        end
+
+        def self.redirected(num, repo, max_col, redirected)
+          self.info num, 'Redirected', repo, false
+          puts "RedirectedTo=#{redirected}"
+        end
+
+        def self.not_found(num, repo, max_col)
+          self.info num, 'Not Found', repo, false
+        end
+
+        def self.alternative(num, repo, max_col, alt)
+          self.info num, 'Not Found', repo, false
+          puts "Hint=#{alt[:message]}"
+          puts "Suggested=#{alt[:url]}" unless alt[:url].to_s.empty?
+        end
+
+        def self.timeout(num, repo, max_col)
+          self.info num, 'Server Timeout', repo, false
+        end
+
+        def self.upgraded(num, repo, max_col)
+          self.info num, 'Upgraded', repo
+        end
+
+        def self.untouched(num, repo, max_col)
+          self.info num, 'Untouched', repo
+        end
+
+        def self.separator
+          puts ''
+        end
+
+        def self.header(max_col, upgrade = false)
+        end
+
+        def self.footer
+        end
+
+
+        private
+
+        def self.info(num, status, repo, valid = true)
+          @@number = num
+          puts "[Repository_#{num}]"
+          puts "Name=#{repo.name}"
+          puts "Alias=#{repo.alias}"
+          puts "OldURL=#{repo.old_url}"
+          puts "URL=#{repo.url}" if valid
+          puts "Priority=#{repo.priority}"
+          puts "Enabled=#{repo.enabled? ? 'Yes' : 'No'}"
+          puts "Status=#{status}"
+        end
+      end
+
     end
   end
 end

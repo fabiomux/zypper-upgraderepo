@@ -118,6 +118,10 @@ module Zypper
             options.sort_by = :priority
           end
 
+          opt.on('--ini', 'Output the result in Ini format') do |o|
+            options.view = :ini
+          end
+
           opt.on('--quiet', 'Quiet mode, show only error messages') do |o|
             options.view = :quiet
           end
