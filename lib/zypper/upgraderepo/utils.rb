@@ -79,6 +79,18 @@ module Zypper
       end
     end
 
+    class MissingOverride < StandardError
+      def initialize(args)
+        super "The repository n.#{args[:num].to_s.bold.red} named #{args[:ini]['Name'].bold.red} doesn't contain the URL key!"
+      end
+    end
+
+    class UnmatchingOverrides < StandardError
+      def initialize(args)
+        super "The repository n.#{args[:num]} named #{args[:repo].name.bold.red} doesn't match with the repository named #{args[:ini]['Name'].bold.red} in the ini file"
+      end
+    end
+
     class AlreadyUpgraded < StandardError
       def initialize(version)
         super "The system is already upgraded to the #{version} version"

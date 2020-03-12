@@ -24,6 +24,7 @@ module Zypper
         options.only_repo = nil
         options.timeout = 10.0
         options.exit_on_fail = false
+        options.filename = ''
 
         opt_parser = OptionParser.new do |opt|
 
@@ -66,6 +67,11 @@ module Zypper
           opt.on('-U', '--upgrade-to <VERSION>', 'Upgrade to a specific VERSION') do |v|
             options.version = v
             options.operation = :upgrade_to
+          end
+
+          opt.on('-F', '--upgrade-from-file <FILENAME>', 'Upgrade from FILENAME') do |f|
+            options.filename = f
+            options.operation = :upgrade_from_file
           end
 
           opt.separator ''

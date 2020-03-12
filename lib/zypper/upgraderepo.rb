@@ -23,6 +23,8 @@ module Zypper
         @backup_path = options.backup_path
 
         @exit_on_fail = options.exit_on_fail
+
+        @filename = options.filename
       end
 
       def backup
@@ -62,6 +64,17 @@ module Zypper
 
       def reset
         upgrade_repos(@os_release.current)
+      end
+
+      def upgrade_from_file
+        ini = IniParse.parse(File.read(@filename))
+        @repos.each_with_index do |r, i|
+          x = ini["Repository_#{i.next}"]
+          raise UnmatchingOverrides, { num: i.next, ini: x, repo: r } if r.url != x['OldURL']
+          raise MissingOverride, { num: i.next, ini: x } unless x['URL']
+          @overrides[i.next] = x['URL']
+        end
+        upgrade_repos(@os_release.next)
       end
 
       private
