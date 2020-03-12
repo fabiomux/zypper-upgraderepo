@@ -52,6 +52,11 @@ module Zypper
         check_repos(@os_release.custom)
       end
 
+      def check_from_file
+        load_overrides
+        check_repos(@os_release.next)
+      end
+
       def upgrade
         raise AlreadyUpgraded, 'latest' if @os_release.last?
         upgrade_repos(@os_release.next)
@@ -67,6 +72,14 @@ module Zypper
       end
 
       def upgrade_from_file
+        load_overrides
+        upgrade_repos(@os_release.next)
+      end
+
+
+      private
+
+      def load_overrides
         ini = IniParse.parse(File.read(@filename))
         @repos.each_with_index do |r, i|
           x = ini["Repository_#{i.next}"]
@@ -74,10 +87,7 @@ module Zypper
           raise MissingOverride, { num: i.next, ini: x } unless x['URL']
           @overrides[i.next] = x['URL']
         end
-        upgrade_repos(@os_release.next)
       end
-
-      private
 
       def check_repos(version)
         @view_class.header(@repos.max_col)

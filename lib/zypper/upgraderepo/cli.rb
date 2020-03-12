@@ -56,6 +56,11 @@ module Zypper
             options.operation = :check_to
           end
 
+          opt.on('-f', '--check-from-file <FILENAME>', 'Check the URLs in the exported FILENAME') do |f|
+            options.filename = f
+            options.operation = :check_from_file
+          end
+
           opt.on('-R', '--reset', 'Reset the repositories to the current OS version.') do |v|
             options.operation = :reset
           end
