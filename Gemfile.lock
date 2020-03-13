@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    zypper-upgraderepo (1.2.0)
+    zypper-upgraderepo (1.3.0)
       iniparse
       minitar
 
@@ -9,7 +9,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.3)
-    iniparse (1.4.4)
+    iniparse (1.5.0)
     minitar (0.9)
     rake (13.0.1)
     rspec (3.9.0)
