@@ -24,7 +24,7 @@ module Zypper
         options.only_repo = nil
         options.timeout = 10.0
         options.exit_on_fail = false
-        options.filename = ''
+        options.overrides_filename = nil
 
         opt_parser = OptionParser.new do |opt|
 
@@ -56,11 +56,6 @@ module Zypper
             options.operation = :check_to
           end
 
-          opt.on('-f', '--check-from-file <FILENAME>', 'Check the URLs in the exported FILENAME') do |f|
-            options.filename = f
-            options.operation = :check_from_file
-          end
-
           opt.on('-R', '--reset', 'Reset the repositories to the current OS version.') do |v|
             options.operation = :reset
           end
@@ -74,13 +69,12 @@ module Zypper
             options.operation = :upgrade_to
           end
 
-          opt.on('-F', '--upgrade-from-file <FILENAME>', 'Upgrade from FILENAME') do |f|
-            options.filename = f
-            options.operation = :upgrade_from_file
-          end
-
           opt.separator ''
           opt.separator 'Options:'
+
+          opt.on('--load-overrides <FILENAME>', 'Check the URLs in the exported FILENAME') do |f|
+            options.filename = f
+          end
 
           opt.on('--exit-on-fail', 'Exit with error when a repository upgrade check fails') do |o|
             options.exit_on_fail = true

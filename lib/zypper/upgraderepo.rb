@@ -24,7 +24,7 @@ module Zypper
 
         @exit_on_fail = options.exit_on_fail
 
-        @filename = options.filename
+        load_overrides(options.overrides_filename) if options.overrides_filename
       end
 
       def backup
@@ -52,11 +52,6 @@ module Zypper
         check_repos(@os_release.custom)
       end
 
-      def check_from_file
-        load_overrides
-        check_repos(@os_release.next)
-      end
-
       def upgrade
         raise AlreadyUpgraded, 'latest' if @os_release.last?
         upgrade_repos(@os_release.next)
@@ -71,21 +66,22 @@ module Zypper
         upgrade_repos(@os_release.current)
       end
 
-      def upgrade_from_file
-        load_overrides
-        upgrade_repos(@os_release.next)
-      end
-
 
       private
 
-      def load_overrides
-        ini = IniParse.parse(File.read(@filename))
+      def load_overrides(filename)
+        raise FileNotFound, filename unless File.exist?(filename)
+        ini = IniParse.parse(File.read(filename))
         @repos.each_with_index do |r, i|
           x = ini["Repository_#{i.next}"]
+          r.enable!(x['Enabled'])
           raise UnmatchingOverrides, { num: i.next, ini: x, repo: r } if r.url != x['OldURL']
-          raise MissingOverride, { num: i.next, ini: x } unless x['URL']
-          @overrides[i.next] = x['URL']
+          if (@repos.only_enabled?)
+            raise MissingOverride, { num: i.next, ini: x } unless x['URL'] || x['Enabled'] =~ /no|false|0/i
+          else
+            raise MissingOverride, { num: i.next, ini: x } unless x['URL']
+          end
+          @overrides[i.next] = x['URL'] if x['URL']
         end
       end
 
@@ -99,7 +95,7 @@ module Zypper
           if r.available?
             @view_class.available i.next, r, @repos.max_col
           else
-            raise UnableToUpgrade, {num: i.next, repo: r} if @exit_on_fail
+            raise UnableToUpgrade, { num: i.next, repo: r } if @exit_on_fail
             if r.redirected?
               @view_class.redirected i.next, r, @repos.max_col, r.redirected_to
             elsif r.not_found?
