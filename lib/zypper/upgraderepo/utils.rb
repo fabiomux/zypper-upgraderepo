@@ -25,6 +25,11 @@ module Zypper
       def new_line;       "\n#{self}" end
     end
 
+    class ::StandardError
+      def error_code
+        1
+      end
+    end
 
     class Messages
 
@@ -48,7 +53,6 @@ module Zypper
 
     end
 
-
     class ReleaseFileNotFound < StandardError
       def initialize
         super 'The release file is not found.'
@@ -65,11 +69,19 @@ module Zypper
       def initialize(filename)
         super "Don't have the right permission to write #{filename}"
       end
+
+      def error_code
+        4
+      end
     end
 
     class SystemUpdateRunning < StandardError
       def initialize(args)
         super "The application #{args[:process].bold} with pid #{args[:pid].bold} is running a system update!"
+      end
+
+      def error_code
+        5
       end
     end
 
@@ -77,11 +89,19 @@ module Zypper
       def initialize(args)
         super "The repository n.#{args[:num].to_s.bold.red} named #{args[:repo].name.bold.red} can't be upgraded, a manual check is required!"
       end
+
+      def error_code
+        7
+      end
     end
 
     class MissingOverride < StandardError
       def initialize(args)
         super "The repository n.#{args[:num].to_s.bold.red} named #{args[:ini]['Name'].bold.red} doesn't contain the URL key!"
+      end
+
+      def error_code
+        8
       end
     end
 
@@ -89,17 +109,29 @@ module Zypper
       def initialize(args)
         super "The repository n.#{args[:num]} named #{args[:repo].name.bold.red} doesn't match with the repository named #{args[:ini]['Name'].bold.red} in the ini file"
       end
+
+      def error_code
+        9
+      end
     end
 
     class AlreadyUpgraded < StandardError
       def initialize(version)
         super "The system is already upgraded to the #{version} version"
       end
+
+      def error_code
+        2
+      end
     end
 
     class NoConnection < StandardError
       def initialize
         super 'Internet connection has some trouble'
+      end
+
+      def error_code
+        6
       end
     end
 

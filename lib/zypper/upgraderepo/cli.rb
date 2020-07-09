@@ -178,7 +178,7 @@ module Zypper
           Upgraderepo::Builder.new(options).send(options.operation)
          rescue => e
            Messages.error e
-           exit 1
+           exit e.error_code
          end
       end
     end
