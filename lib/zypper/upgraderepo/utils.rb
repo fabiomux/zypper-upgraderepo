@@ -53,6 +53,12 @@ module Zypper
 
     end
 
+    class FileNotFound < StandardError
+      def initialize(filename)
+        super "The File #{filename} doesn't exist."
+      end
+    end
+
     class ReleaseFileNotFound < StandardError
       def initialize
         super 'The release file is not found.'
