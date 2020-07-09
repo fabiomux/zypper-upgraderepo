@@ -14,17 +14,22 @@ module Zypper
         @alias = options.alias
         @name = options.name
         @only_repo = options.only_repo
+        @only_enabled = options.only_enabled
         @list = []
 
         Dir.glob(File.join(REPOSITORY_PATH, '*.repo')).each do |i|
           r = RepositoryRequest.new(Repository.new(i), options.timeout)
-          next if options.only_enabled && (!r.enabled?)
+          next if @only_enabled && (!r.enabled?)
           @list << r
         end
         @max_col = @list.max_by { |x| x.name.length }.name.length
 
         @list.sort_by! { |x| x.alias }
         @list.sort_by! { |x| x.send(options.sort_by) } if options.sort_by != :alias
+      end
+
+      def only_enabled?
+        @only_enabled
       end
 
       def each_with_index
@@ -57,6 +62,10 @@ module Zypper
 
       def enabled?
         @repo[@key]['enabled'].to_i == 1
+      end
+
+      def enable!(value = true)
+        @repo[@key]['enabled'] = (value.to_s =~ /true|1|yes/i) ? 1 : 0
       end
 
       def type
