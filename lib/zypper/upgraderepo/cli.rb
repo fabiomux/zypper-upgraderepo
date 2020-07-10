@@ -25,6 +25,7 @@ module Zypper
         options.timeout = 10.0
         options.exit_on_fail = false
         options.overrides_filename = nil
+        options.only_invalid = false
 
         opt_parser = OptionParser.new do |opt|
 
@@ -121,6 +122,10 @@ module Zypper
 
           opt.on('--sort-by-priority', 'Sort repositories by priority') do |o|
             options.sort_by = :priority
+          end
+
+          opt.on('--only-invalid', 'Show only invalid repositories') do |o|
+            options.only_invalid = true
           end
 
           opt.on('--ini', 'Output the result in Ini format') do |o|

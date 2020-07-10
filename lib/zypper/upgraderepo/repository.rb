@@ -15,6 +15,7 @@ module Zypper
         @name = options.name
         @only_repo = options.only_repo
         @only_enabled = options.only_enabled
+        @only_invalid = options.only_invalid
         @list = []
 
         Dir.glob(File.join(REPOSITORY_PATH, '*.repo')).each do |i|
@@ -35,10 +36,12 @@ module Zypper
       def each_with_index(options = {})
         only_repo = options[:only_repo].nil? ? @only_repo : options[:only_repo]
         only_enabled = options[:only_enabled].nil? ? @only_enabled : options[:only_enabled]
+        only_invalid = options[:only_invalid].nil? ? @only_invalid : options[:only_invalid]
 
         @list.each do |x|
           next if only_repo && !only_repo.include?(x[:num])
           next if only_enabled && !x[:repo].enabled?
+          next if only_invalid && x[:repo].available?
 
           yield x[:repo], x[:num] if block_given?
         end
