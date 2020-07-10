@@ -19,24 +19,28 @@ module Zypper
 
         Dir.glob(File.join(REPOSITORY_PATH, '*.repo')).each do |i|
           r = RepositoryRequest.new(Repository.new(i), options.timeout)
-          next if @only_enabled && (!r.enabled?)
           @list << r
         end
         @max_col = @list.max_by { |x| x.name.length }.name.length
 
-        @list.sort_by! { |x| x.alias }
-        @list.sort_by! { |x| x.send(options.sort_by) } if options.sort_by != :alias
+        @list = @list.sort_by { |x| x.alias }.map.with_index(1) { |x, i| { num: i, repo: x } }
+
+        @list.sort_by! { |x| x[:repo].send(options.sort_by) } if options.sort_by != :alias
       end
 
       def only_enabled?
         @only_enabled
       end
 
-      def each_with_index
-        @list.each_with_index do |repo, i|
-          next if @only_repo && !@only_repo.include?(i.next)
+      def each_with_index(options = {})
+        only_repo = options[:only_repo].nil? ? @only_repo : options[:only_repo]
+        only_enabled = options[:only_enabled].nil? ? @only_enabled : options[:only_enabled]
 
-          yield repo, i if block_given?
+        @list.each do |x|
+          next if only_repo && !only_repo.include?(x[:num])
+          next if only_enabled && !x[:repo].enabled?
+
+          yield x[:repo], x[:num] if block_given?
         end
       end
 
