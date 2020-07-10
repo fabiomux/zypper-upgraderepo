@@ -73,7 +73,7 @@ module Zypper
           opt.separator 'Options:'
 
           opt.on('--load-overrides <FILENAME>', 'Check the URLs in the exported FILENAME') do |f|
-            options.filename = f
+            options.overrides_filename = f
           end
 
           opt.on('--exit-on-fail', 'Exit with error when a repository upgrade check fails') do |o|
