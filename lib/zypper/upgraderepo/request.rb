@@ -44,6 +44,10 @@ module Zypper
         ping.class.to_s
       end
 
+      def cache!
+        @page = nil
+      end
+
 
       private
 
