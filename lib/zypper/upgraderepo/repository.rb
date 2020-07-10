@@ -33,6 +33,13 @@ module Zypper
         @only_enabled
       end
 
+      def upgrade!(version, options, overrides)
+        each_with_index(only_invalid: false) do |repo, num|
+          repo.upgrade version, options.merge(url_override: overrides[num])
+          repo.cache!
+        end
+      end
+
       def each_with_index(options = {})
         only_repo = options[:only_repo].nil? ? @only_repo : options[:only_repo]
         only_enabled = options[:only_enabled].nil? ? @only_enabled : options[:only_enabled]
