@@ -43,12 +43,12 @@ module Zypper
 
       def check_next
         raise AlreadyUpgraded, 'latest' if @os_release.last?
-        @repos.each_with_index { |r, i| r.upgrade(@os_release.next, @upgrade_options.merge(url_override: @overrides[i.next])) }
+        @repos.upgrade! @os_release.next, @upgrade_options, @overrides
         check_repos(@os_release.next)
       end
 
       def check_to
-        @repos.each_with_index { |r, i| r.upgrade(@os_release.custom, @upgrade_options.merge(url_override: @overrides[i.next])) }
+        @repos.upgrade! @os_release.custom, @upgrade_options, @overrides
         check_repos(@os_release.custom)
       end
 
@@ -72,40 +72,41 @@ module Zypper
       def load_overrides(filename)
         raise FileNotFound, filename unless File.exist?(filename)
         ini = IniParse.parse(File.read(filename))
-        @repos.each_with_index do |r, i|
-          x = ini["Repository_#{i.next}"]
-          r.enable!(x['Enabled'])
-          raise UnmatchingOverrides, { num: i.next, ini: x, repo: r } if r.url != x['OldURL']
-          if (@repos.only_enabled?)
-            raise MissingOverride, { num: i.next, ini: x } unless x['URL'] || x['Enabled'] =~ /no|false|0/i
-          else
-            raise MissingOverride, { num: i.next, ini: x } unless x['URL']
+        @repos.each_with_number(only_invalid: false) do |repo, num|
+          if x = ini["repository_#{num}"]
+            repo.enable!(x['enabled'])
+            raise UnmatchingOverrides, { num: num, ini: x, repo: repo } if repo.url != x['old_url']
+            if (@repos.only_enabled?)
+              raise MissingOverride, { num: num, ini: x } unless x['url'] || x['enabled'] =~ /no|false|0/i
+            else
+              raise MissingOverride, { num: num, ini: x } unless x['url']
+            end
+            @overrides[num] = x['url'] if x['url']
           end
-          @overrides[i.next] = x['URL'] if x['URL']
         end
       end
 
       def check_repos(version)
         @view_class.header(@repos.max_col)
 
-        @repos.each_with_index do |r, i|
+        @repos.each_with_number do |repo, num|
 
           @view_class.separator
 
-          if r.available?
-            @view_class.available i.next, r, @repos.max_col
+          if repo.available?
+            @view_class.available num, repo, @repos.max_col
           else
-            raise UnableToUpgrade, { num: i.next, repo: r } if @exit_on_fail
-            if r.redirected?
-              @view_class.redirected i.next, r, @repos.max_col, r.redirected_to
-            elsif r.not_found?
+            raise UnableToUpgrade, { num: num, repo: repo } if @exit_on_fail
+            if repo.redirected?
+              @view_class.redirected num, repo, @repos.max_col, repo.redirected_to
+            elsif repo.not_found?
               if @print_hint
-                @view_class.alternative i.next, r, @repos.max_col, r.evaluate_alternative(version)
+                @view_class.alternative num, repo, @repos.max_col, repo.evaluate_alternative(version)
               else
-                @view_class.not_found i.next, r, @repos.max_col
+                @view_class.not_found num, repo, @repos.max_col
               end
-            elsif r.timeout?
-              @view_class.timeout i.next, r, @repos.max_col
+            elsif repo.timeout?
+              @view_class.timeout num, repo, @repos.max_col
             end
           end
         end
@@ -116,16 +117,16 @@ module Zypper
       def upgrade_repos(version)
         @view_class.header(@repos.max_col, true)
 
-        @repos.each_with_index do |repo, i|
+        @repos.each_with_number do |repo, num|
 
           @view_class.separator
 
-          repo.upgrade(version, @upgrade_options.merge(url_override: @overrides[i.next]))
+          repo.upgrade!(version, @upgrade_options.merge(url_override: @overrides[num]))
 
           if repo.upgraded?
-            @view_class.upgraded i.next, repo, @repos.max_col
+            @view_class.upgraded num, repo, @repos.max_col
           else
-            @view_class.untouched i.next, repo, @repos.max_col
+            @view_class.untouched num, repo, @repos.max_col
           end
         end
 

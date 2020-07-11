@@ -22,9 +22,9 @@ module Zypper
           r = RepositoryRequest.new(Repository.new(i), options.timeout)
           @list << r
         end
-        @max_col = @list.max_by { |x| x.name.length }.name.length
+        @max_col = @list.max_by { |r| r.name.length }.name.length
 
-        @list = @list.sort_by { |x| x.alias }.map.with_index(1) { |x, i| { num: i, repo: x } }
+        @list = @list.sort_by { |r| r.alias }.map.with_index(1) { |r, i| { num: i, repo: r } }
 
         @list.sort_by! { |x| x[:repo].send(options.sort_by) } if options.sort_by != :alias
       end
@@ -34,13 +34,13 @@ module Zypper
       end
 
       def upgrade!(version, options, overrides)
-        each_with_index(only_invalid: false) do |repo, num|
-          repo.upgrade version, options.merge(url_override: overrides[num])
+        each_with_number(only_invalid: false) do |repo, num|
+          repo.upgrade! version, options.merge(url_override: overrides[num])
           repo.cache!
         end
       end
 
-      def each_with_index(options = {})
+      def each_with_number(options = {})
         only_repo = options[:only_repo].nil? ? @only_repo : options[:only_repo]
         only_enabled = options[:only_enabled].nil? ? @only_enabled : options[:only_enabled]
         only_invalid = options[:only_invalid].nil? ? @only_invalid : options[:only_invalid]
@@ -115,7 +115,7 @@ module Zypper
         @key = get_key
       end
 
-      def upgrade(version, args = {})
+      def upgrade!(version, args = {})
         @old_url ||= self.url
         @old_alias ||= self.alias
         @old_name ||= self.name

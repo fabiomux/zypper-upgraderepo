@@ -103,7 +103,7 @@ module Zypper
 
     class MissingOverride < StandardError
       def initialize(args)
-        super "The repository n.#{args[:num].to_s.bold.red} named #{args[:ini]['Name'].bold.red} doesn't contain the URL key!"
+        super "The repository n.#{args[:num].to_s.bold.red} named #{args[:ini]['name'].bold.red} doesn't contain the URL key!"
       end
 
       def error_code
@@ -113,7 +113,7 @@ module Zypper
 
     class UnmatchingOverrides < StandardError
       def initialize(args)
-        super "The repository n.#{args[:num]} named #{args[:repo].name.bold.red} doesn't match with the repository named #{args[:ini]['Name'].bold.red} in the ini file"
+        super "The repository n.#{args[:num]} named #{args[:repo].name.bold.red} doesn't match with the repository named #{args[:ini]['name'].bold.red} in the ini file"
       end
 
       def error_code
