@@ -160,7 +160,7 @@ module Zypper
 
         def self.redirected(num, repo, max_col, redirected)
           self.info num, 'Redirected', repo, false
-          puts "RedirectedTo=#{redirected}"
+          puts "redirected_to=#{redirected}"
         end
 
         def self.not_found(num, repo, max_col)
@@ -169,8 +169,8 @@ module Zypper
 
         def self.alternative(num, repo, max_col, alt)
           self.info num, 'Not Found', repo, false
-          puts "Hint=#{alt[:message]}"
-          puts "Suggested=#{alt[:url]}" unless alt[:url].to_s.empty?
+          puts "hint=#{alt[:message]}"
+          puts "suggested_url=#{alt[:url]}" unless alt[:url].to_s.empty?
         end
 
         def self.timeout(num, repo, max_col)
@@ -200,14 +200,34 @@ module Zypper
 
         def self.info(num, status, repo, valid = true)
           @@number = num
-          puts "[Repository_#{num}]"
-          puts "Name=#{repo.name}"
-          puts "Alias=#{repo.alias}"
-          puts "OldURL=#{repo.old_url}"
-          puts "URL=#{repo.url}" if valid
-          puts "Priority=#{repo.priority}"
-          puts "Enabled=#{repo.enabled? ? 'Yes' : 'No'}"
-          puts "Status=#{status}"
+          puts "[repository_#{num}]"
+          puts "name=#{repo.name}"
+          puts "alias=#{repo.alias}"
+          puts "old_url=#{repo.old_url}"
+          if valid
+            puts "url=#{repo.url}"
+          elsif repo.enabled?
+            puts <<-'HEADER'.gsub(/^ +/, '')
+              # The interpolated URL is invalid, try overriding with the one suggested
+              # in the fields below or find it manually starting from the old_url.
+              # The alternatives are:
+              # 1. Waiting for a repository upgrade;
+              # 2. Change the provider for the related installed packages;
+              # 3. Disable the repository putting the enabled status to 'No'.
+              #
+              url=
+            HEADER
+          else
+            puts <<-'HEADER'.gsub(/^ +/, '')
+              # The interpolated URL is invalid, but being the repository disabled you can
+              # keep the old_url in the field below, it will be ignored anyway during the
+              # normal update and upgrade process.
+            HEADER
+            puts "url=#{repo.old_url}"
+          end
+          puts "priority=#{repo.priority}"
+          puts "enabled=#{repo.enabled? ? 'Yes' : 'No'}"
+          puts "status=#{status}"
         end
       end
 
