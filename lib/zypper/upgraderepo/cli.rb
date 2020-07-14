@@ -73,6 +73,22 @@ module Zypper
           opt.separator ''
           opt.separator 'Options:'
 
+          opt.on('--no-name', 'Don\'t upgrade the name') do |o|
+            options.name = false
+          end
+
+          opt.on('--no-alias', 'Don\'t upgrade the alias') do |o|
+            options.alias = false
+          end
+
+          opt.on('--no-hint', 'Don\'t find a working URL when the current is invalid') do |o|
+            options.hint = false
+          end
+
+          opt.on('--override-url <NUMBER>,<URL>', Array, 'Overwrite the repository NUMBER with URL') do |r|
+            options.overrides[r[0].to_i] = r[1]
+          end
+
           opt.on('--load-overrides <FILENAME>', 'Check the URLs in the exported FILENAME') do |f|
             options.overrides_filename = f
           end
@@ -80,6 +96,13 @@ module Zypper
           opt.on('--exit-on-fail', 'Exit with error when a repository upgrade check fails') do |o|
             options.exit_on_fail = true
           end
+
+          opt.on('--timeout <SECONDS>', "Adjust the waiting SECONDS used to catch an HTTP Timeout Error (Default: #{options.timeout})") do |o|
+            options.timeout = o.to_f
+          end
+
+          opt.separator ''
+          opt.separator 'Filter options:'
 
           opt.on('--only-enabled', 'Include only the enabled repositories') do |o|
             options.only_enabled = true
@@ -89,24 +112,8 @@ module Zypper
             options.only_repo = o.split(',').map(&:to_i)
           end
 
-          opt.on('--no-name', 'Don\'t upgrade the name') do |o|
-            options.name = false
-          end
-
-          opt.on('--no-alias', 'Don\'t upgrade the alias') do |o|
-            options.alias = false
-          end
-
-          opt.on('--no-hint', 'Don\'t find a working url when the current is invalid') do |o|
-            options.hint = false
-          end
-
-          opt.on('--override-url <NUMBER>,<URL>', Array, 'Overwrite the repository\'s url NUMBER with URL') do |r|
-            options.overrides[r[0].to_i] = r[1]
-          end
-
-          opt.on('--timeout <SECONDS>', "Adjust the waiting SECONDS used to catch an HTTP Timeout Error (Default: #{options.timeout})") do |o|
-            options.timeout = o.to_f
+          opt.on('--only-invalid', 'Show only invalid repositories') do |o|
+            options.only_invalid = true
           end
 
           opt.separator ''
@@ -122,10 +129,6 @@ module Zypper
 
           opt.on('--sort-by-priority', 'Sort repositories by priority') do |o|
             options.sort_by = :priority
-          end
-
-          opt.on('--only-invalid', 'Show only invalid repositories') do |o|
-            options.only_invalid = true
           end
 
           opt.on('--ini', 'Output the result in Ini format') do |o|
