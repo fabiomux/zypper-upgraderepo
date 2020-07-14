@@ -17,14 +17,9 @@ module Zypper
         @print_hint = options.hint
         @view_class = Zypper::Upgraderepo::View.const_get options.view.to_s.capitalize
 
-        @overrides = options.overrides
-        @upgrade_options = { alias: options.alias, name: options.name }
-
         @backup_path = options.backup_path
 
         @exit_on_fail = options.exit_on_fail
-
-        load_overrides(options.overrides_filename) if options.overrides_filename
       end
 
       def backup
@@ -43,22 +38,24 @@ module Zypper
 
       def check_next
         raise AlreadyUpgraded, 'latest' if @os_release.last?
-        @repos.upgrade! @os_release.next, @upgrade_options, @overrides
+        @repos.upgrade!(@os_release.next)
         check_repos(@os_release.next)
       end
 
       def check_to
-        @repos.upgrade! @os_release.custom, @upgrade_options, @overrides
+        @repos.upgrade!(@os_release.custom)
         check_repos(@os_release.custom)
       end
 
       def upgrade
         raise AlreadyUpgraded, 'latest' if @os_release.last?
+        @repos.upgrade!(@os_release.next)
         upgrade_repos(@os_release.next)
       end
 
       def upgrade_to
         raise AlreadyUpgraded, @os_release.custom if @os_release.current?(@os_release.custom)
+        @repos.upgrade!(@os_release.custom)
         upgrade_repos(@os_release.custom)
       end
 
@@ -68,23 +65,6 @@ module Zypper
 
 
       private
-
-      def load_overrides(filename)
-        raise FileNotFound, filename unless File.exist?(filename)
-        ini = IniParse.parse(File.read(filename))
-        @repos.each_with_number(only_invalid: false) do |repo, num|
-          if x = ini["repository_#{num}"]
-            repo.enable!(x['enabled'])
-            raise UnmatchingOverrides, { num: num, ini: x, repo: repo } if repo.url != x['old_url']
-            if (@repos.only_enabled?)
-              raise MissingOverride, { num: num, ini: x } unless x['url'] || x['enabled'] =~ /no|false|0/i
-            else
-              raise MissingOverride, { num: num, ini: x } unless x['url']
-            end
-            @overrides[num] = x['url'] if x['url']
-          end
-        end
-      end
 
       def check_repos(version)
         @view_class.header(@repos.max_col)
@@ -120,8 +100,6 @@ module Zypper
         @repos.each_with_number do |repo, num|
 
           @view_class.separator
-
-          repo.upgrade!(version, @upgrade_options.merge(url_override: @overrides[num]))
 
           if repo.upgraded?
             @view_class.upgraded num, repo, @repos.max_col

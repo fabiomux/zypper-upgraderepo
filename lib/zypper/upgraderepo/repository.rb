@@ -16,6 +16,8 @@ module Zypper
         @only_repo = options.only_repo
         @only_enabled = options.only_enabled
         @only_invalid = options.only_invalid
+        @overrides = options.overrides
+        @upgrade_options = {alias: options.alias, name: options.name}
         @list = []
 
         Dir.glob(File.join(REPOSITORY_PATH, '*.repo')).each do |i|
@@ -27,15 +29,17 @@ module Zypper
         @list = @list.sort_by { |r| r.alias }.map.with_index(1) { |r, i| { num: i, repo: r } }
 
         @list.sort_by! { |x| x[:repo].send(options.sort_by) } if options.sort_by != :alias
+
+        load_overrides(options.filename) if options.filename
       end
 
       def only_enabled?
         @only_enabled
       end
 
-      def upgrade!(version, options, overrides)
+      def upgrade!(version)
         each_with_number(only_invalid: false) do |repo, num|
-          repo.upgrade! version, options.merge(url_override: overrides[num])
+          repo.upgrade! version, @upgrade_options.merge(url_override: @overrides[num])
           repo.cache!
         end
       end
@@ -59,6 +63,27 @@ module Zypper
           i.save
         end
       end
+
+
+      private
+
+      def load_overrides(filename)
+        raise FileNotFound, filename unless File.exist?(filename)
+        ini = IniParse.parse(File.read(filename))
+        each_with_number(only_invalid: false) do |repo, num|
+          if x = ini["repository_#{num}"]
+            repo.enable!(x['enabled'])
+            raise UnmatchingOverrides, { num: num, ini: x, repo: repo } if repo.url != x['old_url']
+            if (@repos.only_enabled?)
+              raise MissingOverride, { num: num, ini: x } unless x['url'] || x['enabled'] =~ /no|false|0/i
+            else
+              raise MissingOverride, { num: num, ini: x } unless x['url']
+            end
+            @overrides[num] = x['url'] if x['url']
+          end
+        end
+      end
+
     end
 
 
