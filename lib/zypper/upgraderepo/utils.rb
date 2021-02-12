@@ -65,6 +65,12 @@ module Zypper
       end
     end
 
+    class InvalidProtocol < StandardError
+      def initialize(repo)
+        super "The repository #{repo.name} has an unknown protocol: #{repo.protocol}; disable it to continue."
+      end
+    end
+
     class InvalidVersion < StandardError
       def initialize(version)
         super "The version #{version} is not valid"

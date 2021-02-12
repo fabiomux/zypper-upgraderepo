@@ -21,7 +21,7 @@ module Zypper
         @list = []
 
         Dir.glob(File.join(REPOSITORY_PATH, '*.repo')).each do |i|
-          r = RepositoryRequest.new(Repository.new(i), options.timeout)
+          r = Request.build(Repository.new(i), options.timeout)
           @list << r
         end
         @max_col = @list.max_by { |r| r.name.length }.name.length
@@ -129,6 +129,18 @@ module Zypper
 
       def url=(value)
         @repo[@key]['baseurl'] = value
+      end
+
+      def protocol
+        URI(url.to_s).scheme
+      end
+
+      def unversioned?
+        (url =~ /\d\d\.\d/).nil?
+      end
+
+      def versioned?
+        !unversioned?
       end
 
       def alias
