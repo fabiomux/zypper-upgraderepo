@@ -16,6 +16,7 @@ module Zypper
         @only_repo = options.only_repo
         @only_enabled = options.only_enabled
         @only_invalid = options.only_invalid
+        @only_protocols = options.only_protocols
         @overrides = options.overrides
         @upgrade_options = {alias: options.alias, name: options.name}
         @list = []
@@ -48,11 +49,13 @@ module Zypper
         only_repo = options[:only_repo].nil? ? @only_repo : options[:only_repo]
         only_enabled = options[:only_enabled].nil? ? @only_enabled : options[:only_enabled]
         only_invalid = options[:only_invalid].nil? ? @only_invalid : options[:only_invalid]
+        only_protocols = options[:only_protocols].nil? ? @only_protocols : options[:only_protocols]
 
         @list.each do |x|
           next if only_repo && !only_repo.include?(x[:num])
           next if only_enabled && !x[:repo].enabled?
           next if only_invalid && x[:repo].available?
+          next if only_protocols && (!only_protocols.include?(x[:repo].protocol))
 
           yield x[:repo], x[:num] if block_given?
         end

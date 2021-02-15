@@ -26,6 +26,7 @@ module Zypper
         options.exit_on_fail = false
         options.overrides_filename = nil
         options.only_invalid = false
+        options.only_protocols = nil
 
         opt_parser = OptionParser.new do |opt|
 
@@ -114,6 +115,10 @@ module Zypper
 
           opt.on('--only-invalid', 'Show only invalid repositories') do |o|
             options.only_invalid = true
+          end
+
+          opt.on('--only-protocols <PROTOCOL>[,<PROTOCOL2>,...]', Array, "Show only from protocols (supported: #{Request.protocols.join(',')})") do |o|
+            options.only_protocols = o
           end
 
           opt.separator ''

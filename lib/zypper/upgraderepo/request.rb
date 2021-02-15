@@ -17,6 +17,9 @@ module Zypper
         Object.const_get("Zypper::Upgraderepo::Requests::#{@@registry[repo.protocol]}").new(repo, timeout)
       end
 
+      def self.protocols
+        self.load_requests.keys
+      end
 
       private
 
