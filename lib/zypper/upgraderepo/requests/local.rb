@@ -66,7 +66,7 @@ module Zypper
 
         def max_drop_back; 1 end
 
-        def self.register; ['dir'] end
+        def self.register_protocol; ['dir'] end
 
         def evaluate_alternative(version)
           if not_found?

@@ -91,7 +91,7 @@ module Zypper
 
         def max_drop_back; 0; end
 
-        def self.register; ['https', 'http'] end
+        def self.register_protocol; ['https', 'http'] end
 
         def evaluate_alternative(version)
           if not_found?
