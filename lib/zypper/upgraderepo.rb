@@ -13,7 +13,7 @@ module Zypper
     class Builder
       def initialize(options)
         @os_release = OsRelease.new(options)
-        @repos = RepositoryList.new(options)
+        @repos = RepositoryList.new(options).resolve_variables!(@os_release.current)
         @print_hint = options.hint
         @view_class = Zypper::Upgraderepo::View.const_get options.view.to_s.capitalize
 

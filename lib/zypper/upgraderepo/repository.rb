@@ -61,6 +61,18 @@ module Zypper
         end
       end
 
+      def resolve_variables!(version)
+        each_with_number do |r|
+          if r.url =~ /\$/
+            r.url = r.url.gsub(/\$releasever_major/, version.split('.')[0])
+                         .gsub(/\$releasever_minor/, version.split('.')[1])
+                         .gsub(/\$releasever/, version)
+          end
+        end
+
+        self
+      end
+
       def save
         @list.each do |i|
           i.save
