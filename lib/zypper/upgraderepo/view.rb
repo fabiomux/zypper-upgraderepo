@@ -7,6 +7,7 @@ module Zypper
 
         def self.available(num, repo, max_col)
           puts " #{num.to_s.rjust(2).bold.green} | Status: #{'Ok'.bold.green}"
+          puts " #{' ' * 2} | Hint: Unversioned repository" if repo.unversioned? && repo.old_url
           self.info(repo)
         end
 
@@ -73,7 +74,11 @@ module Zypper
       class Table
 
         def self.available(num, repo, max_col)
-          Messages.ok("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} |")
+          if repo.unversioned? && repo.old_url
+            Messages.ok("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | Unversioned repository")
+          else
+            Messages.ok("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} |")
+          end
         end
 
         def self.redirected(num, repo, max_col, redirected)
@@ -205,6 +210,14 @@ module Zypper
           puts "alias=#{repo.alias}"
           puts "old_url=#{repo.old_url}"
           if valid
+            if repo.unversioned? && repo.old_url
+              puts <<-'HEADER'.gsub(/^ +/, '')
+                # The repository is unversioned: its packages should be perfectly
+                # working regardless the distribution version, that because all the
+                # required dependencies are included in the repository itself and
+                # automatically picked up.
+              HEADER
+            end
             puts "url=#{repo.url}"
           elsif repo.enabled?
             puts <<-'HEADER'.gsub(/^ +/, '')
