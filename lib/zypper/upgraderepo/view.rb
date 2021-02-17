@@ -208,7 +208,7 @@ module Zypper
           puts "[repository_#{num}]"
           puts "name=#{repo.name}"
           puts "alias=#{repo.alias}"
-          puts "old_url=#{repo.old_url}"
+          puts "old_url=#{repo.old_url}" if repo.upgraded?
           if valid
             if repo.unversioned? && repo.old_url
               puts <<-'HEADER'.gsub(/^ +/, '')
