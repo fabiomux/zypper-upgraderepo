@@ -62,7 +62,7 @@ module Zypper
             options.operation = :reset
           end
 
-          opt.on('-u', '--upgrade', 'Upgrade to the last version available') do |o|
+          opt.on('-u', '--upgrade', 'Upgrade to the next version available') do |o|
             options.operation = :upgrade
           end
 
