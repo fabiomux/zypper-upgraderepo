@@ -59,6 +59,12 @@ module Zypper
         upgrade_repos(@os_release.custom)
       end
 
+      def upgrade_to_last
+        raise AlreadyUpgraded, 'latest' if @os_release.last?
+        @repos.upgrade!(@os_release.last)
+        upgrade_repos(@os_release.last)
+      end
+
       def reset
         upgrade_repos(@os_release.current)
       end

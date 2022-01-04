@@ -32,6 +32,10 @@ module Zypper
         OS_VERSIONS[@current_idx]
       end
 
+      def last
+        OS_VERSIONS[-1]
+      end
+
       def next
         unless last?
           OS_VERSIONS[@current_idx.next]
