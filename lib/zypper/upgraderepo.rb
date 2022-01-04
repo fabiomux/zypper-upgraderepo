@@ -42,12 +42,18 @@ module Zypper
         check_repos(@os_release.next)
       end
 
-      def check_to
+      def check_for
         @repos.upgrade!(@os_release.custom)
         check_repos(@os_release.custom)
       end
 
-      def upgrade
+      def check_last
+        raise AlreadyUpgraded, 'latest' if @os_release.last?
+        @repos.upgrade!(@os_release.last)
+        check_repos(@os_release.last)
+      end
+
+      def upgrade_to_next
         raise AlreadyUpgraded, 'latest' if @os_release.last?
         @repos.upgrade!(@os_release.next)
         upgrade_repos(@os_release.next)

@@ -49,13 +49,17 @@ module Zypper
             options.operation = :check_current
           end
 
-          opt.on('-N', '--check-next', 'Check the repositories for the next version') do |o|
+          opt.on('-n', '--check-next', 'Check the repositories for the next version') do |o|
             options.operation = :check_next
           end
 
-          opt.on('-C', '--check-to <VERSION>', 'Check for a custom VERSION') do |v|
+          opt.on('-C', '--check-for <VERSION>', 'Check for a custom VERSION') do |v|
             options.version = v
-            options.operation = :check_to
+            options.operation = :check_for
+          end
+
+          opt.on('-l', '--check-last', 'Check the repositories for the last version') do |o|
+            options.operation = :check_last
           end
 
           opt.on('-R', '--reset', 'Reset the repositories to the current OS version.') do |v|
@@ -63,12 +67,16 @@ module Zypper
           end
 
           opt.on('-u', '--upgrade', 'Upgrade to the next version available') do |o|
-            options.operation = :upgrade
+            options.operation = :upgrade_to_next
           end
 
           opt.on('-U', '--upgrade-to <VERSION>', 'Upgrade to a specific VERSION') do |v|
             options.version = v
             options.operation = :upgrade_to
+          end
+
+          opt.on('-L', '--upgrade-to-last', 'Upgrade to the last version available') do |o|
+            options.operation = :upgrade_to_last
           end
 
           opt.separator ''
