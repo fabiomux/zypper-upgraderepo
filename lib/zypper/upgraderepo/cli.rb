@@ -79,6 +79,10 @@ module Zypper
             options.operation = :upgrade_to_last
           end
 
+          opt.on('-s', '--status', 'Prints the version status of the current and available releases') do |o|
+            options.operation = :status
+          end
+
           opt.separator ''
           opt.separator 'Options:'
 

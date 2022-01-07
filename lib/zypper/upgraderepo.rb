@@ -75,6 +75,9 @@ module Zypper
         upgrade_repos(@os_release.current)
       end
 
+      def status
+        @view_class.status(@os_release)
+      end
 
       private
 

@@ -56,6 +56,17 @@ module Zypper
           self.separator
         end
 
+        def self.status(os_release)
+          color = os_release.seniority == 0 ? :green : :yellow
+          puts '----------------------------------------------'
+          puts "Full name       | #{os_release.fullname.bold}"
+          puts '----------------------------------------------'
+          puts "Current release | #{os_release.current.bold.send(color)}"
+          puts "Next release    | #{os_release.seniority > 0 ? os_release.next.bold.green : '-'}"
+          puts "Last release    | #{os_release.last.bold.blue}"
+          puts "Available       | #{os_release.seniority > 0 ? os_release.newer.map{ |i| i.bold }.join(', ') : '-' }"
+          puts '----------------------------------------------'
+        end
 
         private
 
@@ -119,6 +130,16 @@ module Zypper
         def self.footer
           self.separator
         end
+
+        def self.status(os_release)
+          puts "---------------------------------------------------"
+          puts " System releases based on #{os_release.fullname.bold}"
+          puts "---------------------------------------------------"
+          puts " Current |  Next  |  Last  | Available"
+          puts "--------------------------------------------------"
+          puts "   #{os_release.current}  |  #{os_release.seniority > 0 ? os_release.next : ' -  ' }  |  #{os_release.last}  | #{os_release.seniority > 0 ? os_release.newer.join(', ') : '-'}"
+          puts "--------------------------------------------------"
+        end
       end
 
 
@@ -152,6 +173,10 @@ module Zypper
         end
 
         def self.footer
+        end
+
+        def self.status(os_release)
+          puts os_release.seniority.to_s + ' ' + os_release.newer.join(' ')
         end
 
       end
@@ -200,6 +225,14 @@ module Zypper
         def self.footer
         end
 
+        def self.status(os_release)
+          puts '[os_release]'
+          puts "name=#{os_release.fullname}"
+          puts "current=#{os_release.current}"
+          puts "next=#{os_release.next}"
+          puts "last=#{os_release.last}"
+          puts "available=#{os_release.newer.join(' ')}"
+        end
 
         private
 

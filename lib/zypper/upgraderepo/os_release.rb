@@ -52,6 +52,22 @@ module Zypper
         end
       end
 
+      def fullname
+        @release['__anonymous__']['PRETTY_NAME'].gsub(/"/, '')
+      end
+
+      def seniority
+        OS_VERSIONS.count - @current_idx.next
+      end
+
+      def newer
+        if seniority > 0
+          OS_VERSIONS[@current_idx.next..-1]
+        else
+          []
+        end
+      end
+
       def last?
         @current_idx == (OS_VERSIONS.count - 1)
       end
