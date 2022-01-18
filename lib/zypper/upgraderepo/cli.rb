@@ -27,6 +27,7 @@ module Zypper
         options.overrides_filename = nil
         options.only_invalid = false
         options.only_protocols = nil
+        options.allow_unstable = false
 
         opt_parser = OptionParser.new do |opt|
 
@@ -85,6 +86,10 @@ module Zypper
 
           opt.separator ''
           opt.separator 'Options:'
+
+          opt.on('--allow-unstable', 'Consider the unstable version as a valid release version') do |o|
+            options.allow_unstable = true
+          end
 
           opt.on('--no-name', 'Don\'t upgrade the name') do |o|
             options.name = false

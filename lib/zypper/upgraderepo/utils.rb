@@ -137,6 +137,16 @@ module Zypper
       end
     end
 
+    class NoUnstableVersionAvailable < StandardError
+      def initialize
+        super 'No unstable version is available, remove the --allow-unstable switch to continue'
+      end
+
+      def error_code
+        11
+      end
+    end
+
     class NoConnection < StandardError
       def initialize
         super 'Internet connection has some trouble'

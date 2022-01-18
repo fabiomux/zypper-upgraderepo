@@ -61,9 +61,9 @@ module Zypper
           puts '----------------------------------------------'
           puts "Full name       | #{os_release.fullname.bold}"
           puts '----------------------------------------------'
-          puts "Current release | #{os_release.current.bold.send(color)}"
+          puts "Current release | #{os_release.current.send(color)}"
           puts "Next release    | #{os_release.seniority > 0 ? os_release.next.bold.green : '-'}"
-          puts "Last release    | #{os_release.last.bold.blue}"
+          puts "Last release    | #{os_release.last.send(os_release.unstable ? :red : :clean)} (#{os_release.unstable ? 'Unstable'.bold.red : 'Stable'.bold.green})"
           puts "Available       | #{os_release.seniority > 0 ? os_release.newer.map{ |i| i.bold }.join(', ') : '-' }"
           puts '----------------------------------------------'
         end
@@ -137,8 +137,9 @@ module Zypper
           puts "---------------------------------------------------"
           puts " Current |  Next  |  Last  | Available"
           puts "--------------------------------------------------"
-          puts "   #{os_release.current}  |  #{os_release.seniority > 0 ? os_release.next : ' -  ' }  |  #{os_release.last}  | #{os_release.seniority > 0 ? os_release.newer.join(', ') : '-'}"
+          puts "   #{os_release.current}  |  #{os_release.seniority > 0 ? os_release.next.bold.green : ' -  ' }  |  #{os_release.last.send(os_release.unstable ? :red : :clean)}  | #{os_release.seniority > 0 ? os_release.newer.join(', ') : '-'}"
           puts "--------------------------------------------------"
+          Messages.warning "The #{'last'.bold.red} version should be considered #{'Unstable'.bold.red}" if os_release.unstable
         end
       end
 
@@ -232,6 +233,7 @@ module Zypper
           puts "next=#{os_release.next}"
           puts "last=#{os_release.last}"
           puts "available=#{os_release.newer.join(' ')}"
+          puts "allow_unstable=#{os_release.unstable}"
         end
 
         private

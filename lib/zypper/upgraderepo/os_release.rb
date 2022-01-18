@@ -6,12 +6,20 @@ module Zypper
 
     class OsRelease
 
-      attr_reader :custom
+      attr_reader :custom, :unstable
 
       OS_VERSIONS = ['13.1', '13.2', '42.1', '42.2', '42.3', '15.0', '15.1', '15.2', '15.3']
 
+      UNSTABLE_VERSION = '15.4'
 
       def initialize(options)
+
+        if options.allow_unstable
+          raise NoUnstableVersionAvailable if UNSTABLE_VERSION.empty?
+          OS_VERSIONS << UNSTABLE_VERSION
+          @unstable = true
+        end
+
         fname = if File.exist? '/etc/os-release'
                   '/etc/os-release'
                 elsif File.exist? '/etc/SuSE-release'
