@@ -75,7 +75,7 @@ module Zypper
 
       def save
         @list.each do |i|
-          i.save
+          i[:repo].save
         end
       end
 
