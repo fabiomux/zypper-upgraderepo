@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata      = {
     "bug_tracker_uri"   => 'https://github.com/fabiomux/zypper-upgraderepo/issues',
-    "changelog_uri"     => 'https://freeaptitude.altervista.org/projects/zypper-upgraderepo.html#changelogs',
+    "changelog_uri"     => 'https://freeaptitude.altervista.org/projects/zypper-upgraderepo.html#changelog',
     "documentation_uri" => "https://www.rubydoc.info/gems/zypper-upgraderepo/#{spec.version}",
     "homepage_uri"      => 'https://freeaptitude.altervista.org/projects/zypper-upgraderepo.html',
     #"mailing_list_uri"  => '',
@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   }
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
-    f.match(%r{^(test|spec|features)/})
+    f.match(%r{^(test|spec|features|.github)/|(.gitignore|.travis.yml|CODE_OF_CONDUCT.md)$})
   end
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
