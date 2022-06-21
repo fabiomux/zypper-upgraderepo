@@ -31,7 +31,7 @@ module Zypper
 
         @list.sort_by! { |x| x[:repo].send(options.sort_by) } if options.sort_by != :alias
 
-        load_overrides(options.filename) if options.filename
+        load_overrides(options.overrides_filename) if options.overrides_filename
       end
 
       def only_enabled?
@@ -89,7 +89,7 @@ module Zypper
           if x = ini["repository_#{num}"]
             repo.enable!(x['enabled'])
             raise UnmatchingOverrides, { num: num, ini: x, repo: repo } if repo.url != x['old_url']
-            if (@repos.only_enabled?)
+            if (only_enabled?)
               raise MissingOverride, { num: num, ini: x } unless x['url'] || x['enabled'] =~ /no|false|0/i
             else
               raise MissingOverride, { num: num, ini: x } unless x['url']

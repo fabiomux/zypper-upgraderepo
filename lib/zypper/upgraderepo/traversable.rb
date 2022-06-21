@@ -77,11 +77,11 @@ module Zypper
 
         uri
       end
-      
+
       def drop_back_level(uri)
         URI(url).path.split('/').index { |x| x =~ /\d\d.\d/ } - uri.path.split('/').count
       end
-      
+
       # to implement on each repository type class
       #
       # def has_repodata?(uri)
