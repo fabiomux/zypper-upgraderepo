@@ -10,7 +10,7 @@ It can be also be installed as Zypper plugin using the [Zypper Upgraderepo Plugi
 
 There are several options to install the service menus listed in this repository.
 
-## Rubygem
+### Rubygem
 
 Install it as a regular Ruby gem with:
 ```shell
