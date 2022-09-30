@@ -1,51 +1,64 @@
 # Zypper-Upgraderepo
 
-Zypper-Upgraderepo helps to check and upgrade the repositories used in your system
-without have to do it manually.
+Zypper-Upgraderepo helps to check and upgrade the repositories used in your system for the
+current, next or a custom valid version, reporting the errors and trying to find a replacement
+when possible.
 
-It can be used stand-alone or installed as _zypper_ plugin.
+It can be also be installed as Zypper plugin using the [Zypper Upgraderepo Plugin][zypper_upgraderepo_plugin].
 
 ## Installation
 
-Install it as:
+There are several options to install the service menus listed in this repository.
 
-    $ gem install zypper-upgraderepo
+## Rubygem
 
-If you want to install it as zypper plugin watch the _zypper-upgraderepo-plugin_ project linked below.
+Install it as a regular Ruby gem with:
+```shell
+$ gem install zypper-upgraderepo
+```
+
+### From the openSUSE Build Service repository
+
+This application has been packaged in my personal OBS repository so you can install It
+as a common RPM package:
+- Add the repository URL in your list;
+- install the package from Yast or Zypper.
+
+Being the repository URL slightly changing from a version to another, I included all the steps
+in the related [project page][project_page] on my blog.
 
 ## Usage
 
 To check the availability of the current repositories:
-
-    $ zypper-upgraderepo --check-current
+```shell
+$ zypper-upgraderepo
+```
 
 To check the availability of the next version repositories:
-
-    $ zypper-upgraderepo --check-next
+```shell
+$ zypper-upgraderepo --check-next
+```
 
 To upgrade the repositories to the next version:
-
-    $ sudo zypper-upgraderepo --upgrade
+```shell
+$ sudo zypper-upgraderepo --upgrade
+```
 
 ## Get help
 
 Where to start:
+```shell
+$ zypper-upgraderepo --help
+```
 
-    $ zypper-upgraderepo --help
+## More Help:
 
-More Help:
+More info is available at:
+- the [Zypper-Upgraderepo GitHub wiki][zypper_upgraderepo_wiki];
+- the article [Upgrading with Zypper][upgrading_with_zypper] on Freeaptitude blog.
 
-- The wiki page: https://github.com/fabiomux/zypper-upgraderepo
-- openSUSE Lizards: https://lizards.opensuse.org/2018/08/07/zypper-upgraderepo-plugin-is-here/
 
-## Related projects
-
-- zypper-upgraderepo-plugin project: https://github.com/fabiomux/zypper-upgraderepo-plugin
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/fabiomux/zypper-upgraderepo. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
-## Code of Conduct
-
-Everyone interacting in the Zypper::Upgraderepo project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/fabiomux/zypper-upgraderepo/blob/master/CODE_OF_CONDUCT.md).
+[zypper_upgraderepo_plugin]: https://github.com/fabiomux/zypper-upgraderepo-plugin "Zypper-Upgraderepo Plugin GitHub page"
+[project_page]: https://freeaptitude.altervista.org/projects/zypper-upgraderepo.html "Zypper-Upgraderepo project page"
+[zypper_upgraderepo_wiki]: https://github.com/fabiomux/zypper-upgraderepo/wiki "Zypper-Upgraderepo wiki page on GitHub"
+[upgrading_with_zypper]: https://freeaptitude.altervista.org/articles/upgrading-opensuse-with-zypper.html "Upgrading openSUSE with Zypper"
