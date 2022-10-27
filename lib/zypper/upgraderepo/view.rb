@@ -103,11 +103,11 @@ module Zypper
         end
 
         def self.not_found(num, repo, max_col)
-          Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | Not Found")
+          Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | #{'Not Found'.bold.red}")
         end
 
         def self.forbidden(num, repo, max_col)
-          Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | Forbidden path")
+          Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | #{'Forbidden path'.bold.red}")
         end
 
         def self.alternative(num, repo, max_col, alt)
