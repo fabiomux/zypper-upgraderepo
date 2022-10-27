@@ -100,6 +100,8 @@ module Zypper
               else
                 @view_class.not_found num, repo, @repos.max_col
               end
+            elsif repo.forbidden?
+              @view_class.forbidden num, repo, @repos.max_col
             elsif repo.timeout?
               @view_class.timeout num, repo, @repos.max_col
             end

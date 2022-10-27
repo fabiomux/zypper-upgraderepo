@@ -22,6 +22,11 @@ module Zypper
           self.info(repo)
         end
 
+        def self.forbidden(num, repo, max_col)
+          puts " #{num.to_s.rjust(2).bold.red} | Status: #{'Forbidden Path'.bold.red}"
+          self.info(repo)
+        end
+
         def self.alternative(num, repo, max_col, alt)
           puts " #{num.to_s.rjust(2).bold.red} | Status: #{'Not Found'.bold.red}"
           puts " #{' ' * 2} | Hint: #{alt[:message].bold.yellow}"
@@ -98,7 +103,11 @@ module Zypper
         end
 
         def self.not_found(num, repo, max_col)
-          Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} |")
+          Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | Not Found")
+        end
+
+        def self.forbidden(num, repo, max_col)
+          Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, ' ')} | #{repo.enabled? ? ' Y ' : ' N '.yellow} | Forbidden path")
         end
 
         def self.alternative(num, repo, max_col, alt)
@@ -155,6 +164,9 @@ module Zypper
         def self.not_found(num, repo, max_col)
         end
 
+        def self.forbidden(num, repo, max_col)
+        end
+
         def self.alternative(num, repo, max_col, alt)
         end
 
@@ -196,6 +208,10 @@ module Zypper
 
         def self.not_found(num, repo, max_col)
           self.info num, 'Not Found', repo, false
+        end
+
+        def self.forbidden(num, repo, max_col)
+          self.info num, 'Forbidden Path', repo, false
         end
 
         def self.alternative(num, repo, max_col, alt)
