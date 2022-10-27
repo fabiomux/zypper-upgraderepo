@@ -20,6 +20,7 @@ module Zypper
         @overrides = options.overrides
         @upgrade_options = {alias: options.alias, name: options.name}
         @list = []
+        @cpu_arch, @arch = `rpm --eval "%cpu_arch;%_arch"`.tr("\n", '').split(';')
 
         Dir.glob(File.join(REPOSITORY_PATH, '*.repo')).each do |i|
           r = Request.build(Repository.new(i), options.timeout)
@@ -67,6 +68,8 @@ module Zypper
             r.url = r.url.gsub(/\$releasever_major/, version.split('.')[0])
                          .gsub(/\$releasever_minor/, version.split('.')[1])
                          .gsub(/\$releasever/, version)
+                         .gsub(/\$basearch/, @arch)
+                         .gsub(/\$arch/, @cpu_arch)
           end
         end
 
