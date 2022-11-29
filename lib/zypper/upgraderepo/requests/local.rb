@@ -68,6 +68,8 @@ module Zypper
 
         def self.register_protocol; ['dir'] end
 
+        def self.domain; 'default' end
+
         def evaluate_alternative(version)
           if not_found?
             return traverse_url(URI(url), version)

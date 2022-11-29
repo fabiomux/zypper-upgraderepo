@@ -93,6 +93,8 @@ module Zypper
 
         def self.register_protocol; ['https', 'http'] end
 
+        def self.domain; 'default' end
+
         def evaluate_alternative(version)
           if not_found?
             return traverse_url(URI(url), version)
@@ -114,14 +116,25 @@ module Zypper
           available?
         end
 
-        def subfolders
-          res = ping.body.to_s.scan(Regexp.new('href=[\'\"][^\/\"]+\/[\'\"]')).delete_if do |x|
+        def subfolders(uri)
+          ping.body.to_s.scan(Regexp.new('href=[\'\"][^\/\"]+\/[\'\"]')).delete_if do |x|
             x =~ /^\// || x =~ /^\.\./ || x =~ /\:\/\// || x =~ /href=[\"\'](media\.1|boot|EFI)\/[\"\']/
           end.uniq.map do |d|
             d.scan(/href=[\"\']([^"]+)[\'\"]/).pop.pop
           end
+        end
+      end
 
-          res
+      class DownloadOpensuseOrgRequest < HttpRequest
+
+        def self.domain; 'download.opensuse.org' end
+
+        def subfolders(uri)
+          u = URI(uri.to_s)
+          u.path = "/download#{u.path}"
+          u.query = 'jsontable'
+          require 'json'
+          JSON.parse(ping(u, false).body.to_s)["data"].map { |x| x["name"] }
         end
       end
 

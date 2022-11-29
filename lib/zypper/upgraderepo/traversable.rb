@@ -49,7 +49,7 @@ module Zypper
         uri.path += '/' if uri.path[-1] != '/'
         ping(uri, false)
 
-        subfolders.each do |dir|
+        subfolders(uri).each do |dir|
           u = URI(uri.to_s)
           u.path += dir
 
