@@ -65,12 +65,10 @@ module Zypper
       def resolve_variables!(version)
         each_with_number do |r|
           if r.url =~ /\$/
-            r.url = r.url.gsub(/\$releasever_major/, version.split('.')[0])
-                         .gsub(/\$releasever_minor/, version.split('.')[1])
-                         .gsub(/\$releasever/, version)
-                         .gsub(/\$basearch/, @arch)
-                         .gsub(/\$arch/, @cpu_arch)
+            r.url = expand_variables(r.url, version)
           end
+          r.name = expand_variables(r.name, version)
+          r.alias = expand_variables(r.alias, version)
         end
 
         self
@@ -84,6 +82,14 @@ module Zypper
 
 
       private
+
+      def expand_variables(str, version)
+       str.gsub(/\$releasever_major/, version.split('.')[0])
+          .gsub(/\$releasever_minor/, version.split('.')[1])
+          .gsub(/\$releasever/, version)
+          .gsub(/\$basearch/, @arch)
+          .gsub(/\$arch/, @cpu_arch)
+      end
 
       def load_overrides(filename)
         raise FileNotFound, filename unless File.exist?(filename)
