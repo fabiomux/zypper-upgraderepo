@@ -67,17 +67,21 @@ module Zypper
         http.request(request)
       end
 
-      def ping(uri = nil, head = true)
+      def ping(uri = nil, head = true, cache = true)
         begin
           if @page.nil? || uri
-            @page = get_request(uri, head)
+            if cache
+              @page = get_request(uri, head)
+            else
+              unpage = get_request(uri, head)
+            end
           end
         rescue SocketError
           raise NoConnection
         rescue Net::OpenTimeout
           @page = Net::HTTPRequestTimeOut.new('1.1', '', '')
         end
-        @page
+        cache ? @page : unpage
       end
 
     end
@@ -112,8 +116,7 @@ module Zypper
         end
 
         def has_repodata?(uri)
-          ping(repodata_uri(uri))
-          available?
+          ping(repodata_uri(uri), true, false).is_a?(Net::HTTPSuccess)
         end
 
         def subfolders(uri)

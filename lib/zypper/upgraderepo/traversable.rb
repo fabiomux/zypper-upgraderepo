@@ -6,7 +6,9 @@ module Zypper
       def traverse_url(uri, version)
         ping(uri)
 
-        if forbidden?
+        if available? && !has_repodata?(uri)
+          return { url: '', message: 'This repository doesn\'t seem working and should be disabled.'}
+        elsif forbidden?
           res =  { url: url, message: 'Can\'t navigate through the repository!' }
         elsif available? && uri.to_s =~ /#{version}/
           res = traverse_url_forward(uri, version)
