@@ -32,6 +32,8 @@ module Zypper
 
         @list.sort_by! { |x| x[:repo].send(options.sort_by) } if options.sort_by != :alias
 
+        @only_repo = select_repos(@only_repo) unless @only_repo.nil?
+
         load_overrides(options.overrides_filename) if options.overrides_filename
       end
 
@@ -82,6 +84,41 @@ module Zypper
 
 
       private
+
+      def select_repos(repos)
+        res = []
+        repos.each do |r|
+          if r.to_i > 0
+            res.push r.to_i
+          elsif r =~ /^\ *@.*/
+            a = r.strip
+            @list.select { |x| x[:repo].alias.match?(Regexp.new(a, 'i')) }.each do |l|
+              res.push l[:num]
+            end
+          elsif r =~ /^\ *\#.*/
+            u = r.gsub(/\#/, '').strip
+            @list.select { |x| x[:repo].url.match?(Regexp.new(u, 'i')) }.each do |l|
+              res.push l[:num]
+            end
+          elsif r =~ /^\ *\&.*/
+            s = r.gsub(/\&/, '').strip
+            @list.select do |x|
+              x[:repo].alias.match?(Regexp.new(s, 'i')) ||
+              x[:repo].name.match?(Regexp.new(s, 'i')) ||
+              x[:repo].url.match?(Regexp.new(s, 'i'))
+            end.each do |l|
+              res.push l[:num]
+            end
+          else
+            n = r.strip
+            @list.select { |x| x[:repo].name.match?(Regexp.new(n, 'i')) }.each do |l|
+              res.push l[:num]
+            end
+          end
+        end
+
+        res.uniq
+      end
 
       def expand_variables(str, version)
        str.gsub(/\$releasever_major/, version.split('.')[0])

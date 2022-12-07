@@ -126,8 +126,8 @@ module Zypper
             options.only_enabled = true
           end
 
-          opt.on('--only-repo <NUMBER>[,NUMBER2,...]', 'Include only the repositories specified by NUMBER') do |o|
-            options.only_repo = o.split(',').map(&:to_i)
+          opt.on('--only-repo <NUMBER|NAME|@ALIAS|#URL|&ANY>[,NUMBER2|NAME2|@ALIAS2|#URL2|&ANY2,...]', 'Include only the repositories specified by a NUMBER or a string matching the NAME, @ALIAS, #URL, or &ANY of them') do |o|
+            options.only_repo = o.split(',')
           end
 
           opt.on('--only-invalid', 'Show only invalid repositories') do |o|
