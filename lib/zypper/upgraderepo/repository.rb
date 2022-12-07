@@ -91,7 +91,7 @@ module Zypper
           if r.to_i > 0
             res.push r.to_i
           elsif r =~ /^\ *@.*/
-            a = r.strip
+            a = r.gsub(/@/, '').strip
             @list.select { |x| x[:repo].alias.match?(Regexp.new(a, 'i')) }.each do |l|
               res.push l[:num]
             end
