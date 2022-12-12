@@ -273,7 +273,7 @@ module Zypper
           elsif repo.enabled?
             puts <<-'HEADER'.gsub(/^ +/, '')
               # The interpolated URL is invalid, try overriding with the one suggested
-              # in the fields below or find it manually starting from the old_url.
+              # in the field below or find it manually starting from the old_url.
               # The alternatives are:
               # 1. Waiting for a repository upgrade;
               # 2. Change the provider for the related installed packages;
@@ -291,6 +291,71 @@ module Zypper
           end
           puts "priority=#{repo.priority}"
           puts "enabled=#{repo.enabled? ? 'Yes' : 'No'}"
+          puts "status=#{status}"
+        end
+      end
+
+
+      class Solver < Ini
+
+        def self.alternative(num, repo, max_col, alt)
+          self.info num, 'Not Found', repo, false, alt[:url]
+          puts "hint=#{alt[:message]}"
+          puts "suggested_url=#{alt[:url]}" unless alt[:url].to_s.empty?
+        end
+
+
+        private
+
+        def self.info(num, status, repo, valid = true, suggested = '')
+          @@number = num
+          puts "[repository_#{num}]"
+          puts "name=#{repo.name}"
+          puts "alias=#{repo.alias}"
+          puts "old_url=#{repo.old_url}" if repo.upgraded?
+          if valid
+            if repo.unversioned? && repo.old_url
+              puts <<-'HEADER'.gsub(/^ +/, '')
+                # The repository is unversioned: its packages should be perfectly
+                # working regardless the distribution version, that because all the
+                # required dependencies are included in the repository itself and
+                # automatically picked up.
+              HEADER
+            end
+            puts "url=#{repo.url}"
+          elsif repo.enabled?
+            unless suggested.empty?
+              puts <<-'HEADER'.gsub(/^ +/, '')
+                # The interpolated URL is invalid, but the script found an alternative
+                # URL which will be used to override the old value.
+                # Unfortunately the script is not able to know if the found URL is exact,
+                # so review the result before accepting any change, and in case want
+                # to disable it, just turn the "enabled" field below to "No".
+                #
+              HEADER
+              puts "url=#{suggested}"
+              puts 'enabled=Yes'
+            else
+              puts <<-'HEADER'.gsub(/^ +/, '')
+                # The interpolated URL is invalid, and the script has not been able to find
+                # an alternative. The best thing to do here is to disable the repository.
+                # In case a valid alternative will be discovered, just replace its URL in
+                # the "url" field below and make sure to re-enable the repository by switching
+                # the "enabled" field to "Yes" again.
+                #
+              HEADER
+              puts "url=#{repo.old_url}"
+              puts 'enabled=No'
+            end
+          else
+            puts <<-'HEADER'.gsub(/^ +/, '')
+              # The interpolated URL is invalid, but being the repository disabled you can
+              # keep the old_url in the field below, it will be ignored anyway during the
+              # normal update and upgrade process.
+            HEADER
+            puts "url=#{repo.old_url}"
+          end
+          puts "priority=#{repo.priority}"
           puts "status=#{status}"
         end
       end

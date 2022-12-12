@@ -153,7 +153,7 @@ module Zypper
             options.sort_by = :priority
           end
 
-          opt.on('--ini', 'Output the result in Ini format') do |o|
+          opt.on('--ini', 'Output the result as INI format') do |o|
             options.view = :ini
           end
 
@@ -165,6 +165,9 @@ module Zypper
             options.view = :report
           end
 
+          opt.on('--solver', 'Output as INI presenting the best solution to fix the invalid repositories') do |o|
+            options.view = :solver
+          end
 
           unless ENV['ZYPPER_UPGRADEREPO']
             opt.separator ''
