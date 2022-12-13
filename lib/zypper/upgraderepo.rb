@@ -33,6 +33,7 @@ module Zypper
       end
 
       def check_current
+        @repos.upgrade!(@os_release.current)
         check_repos(@os_release.current)
       end
 
