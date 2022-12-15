@@ -22,7 +22,7 @@ module Zypper
         @list = []
         @cpu_arch, @arch = `rpm --eval "%cpu_arch;%_arch"`.tr("\n", '').split(';')
 
-        Dir.glob(File.join(REPOSITORY_PATH, '*.repo')).each do |i|
+        Dir.glob(File.join(self.class::REPOSITORY_PATH, '*.repo')).each do |i|
           r = Request.build(Repository.new(i), options.timeout)
           @list << r
         end
