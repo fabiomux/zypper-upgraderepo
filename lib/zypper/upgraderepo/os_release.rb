@@ -12,6 +12,10 @@ module Zypper
 
       UNSTABLE_VERSION = '15.5'
 
+      OS_RELEASE_FILE = '/etc/os-release'
+
+      SUSE_RELEASE_FILE = '/etc/SuSE-release'
+
       def initialize(options)
 
         if options.allow_unstable
@@ -20,10 +24,10 @@ module Zypper
           @unstable = true
         end
 
-        fname = if File.exist? '/etc/os-release'
-                  '/etc/os-release'
-                elsif File.exist? '/etc/SuSE-release'
-                  '/etc/SuSE-release'
+        fname = if File.exist? self.class::OS_RELEASE_FILE
+                  self.class::OS_RELEASE_FILE
+                elsif File.exist? self.class::SUSE_RELEASE_FILE
+                  self.class::SUSE_RELEASE_FILE
                 else
                   raise ReleaseFileNotFound
                 end
