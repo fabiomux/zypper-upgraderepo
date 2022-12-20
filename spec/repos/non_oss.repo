@@ -1,0 +1,8 @@
+[non_OSS]
+name=openSUSE_Leap_15.4_non-OSS
+enabled=1
+autorefresh=1
+baseurl=http://download.opensuse.org/distribution/leap/15.4/repo/non-oss/
+type=rpm-md
+gpgcheck=1
+keeppackages=0

@@ -1,0 +1,8 @@
+[Packman]
+name=Packman_Leap_15.4
+enabled=1
+autorefresh=1
+baseurl=http://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Leap_15.4/
+path=/
+type=rpm-md
+keeppackages=0

@@ -1,0 +1,8 @@
+[OSS]
+name=openSUSE_Leap_15.4_OSS
+enabled=1
+autorefresh=1
+baseurl=http://download.opensuse.org/distribution/leap/15.4/repo/oss/
+path=/
+type=rpm-md
+keeppackages=0

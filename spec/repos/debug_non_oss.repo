@@ -1,0 +1,9 @@
+[Debug_non_OSS]
+name=openSUSE_Leap_15.3_debug_non-OSS
+enabled=1
+autorefresh=1
+baseurl=https://download.opensuse.org/debug/update/leap/15.3/non-oss/
+path=/
+type=rpm-md
+gpgcheck=1
+keeppackages=0
