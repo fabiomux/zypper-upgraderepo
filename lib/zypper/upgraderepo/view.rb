@@ -215,7 +215,7 @@ module Zypper
         end
 
         def self.alternative(num, repo, max_col, alt)
-          self.info num, 'Not Found', repo, false
+          self.info num, 'Not Found', repo, false, alt[:url]
           puts "hint=#{alt[:message]}"
           puts "suggested_url=#{alt[:url]}" unless alt[:url].to_s.empty?
         end
@@ -254,12 +254,12 @@ module Zypper
 
         private
 
-        def self.info(num, status, repo, valid = true)
+        def self.info(num, status, repo, valid = true, suggested = '')
           @@number = num
           puts "[repository_#{num}]"
           puts "name=#{repo.name}"
           puts "alias=#{repo.alias}"
-          puts "old_url=#{repo.old_url}" if repo.upgraded?
+          puts "old_url=#{repo.old_url}" if repo.upgraded? || (!suggested.empty?)
           if valid
             if repo.unversioned? && repo.old_url
               puts <<-'HEADER'.gsub(/^ +/, '')
@@ -312,7 +312,7 @@ module Zypper
           puts "[repository_#{num}]"
           puts "name=#{repo.name}"
           puts "alias=#{repo.alias}"
-          puts "old_url=#{repo.old_url}" if repo.upgraded?
+          puts "old_url=#{repo.old_url}" if repo.upgraded? || (!suggested.empty?)
           if valid
             if repo.unversioned? && repo.old_url
               puts <<-'HEADER'.gsub(/^ +/, '')
