@@ -80,6 +80,11 @@ module Zypper
         @view_class.status(@os_release)
       end
 
+      def update
+        @repos.upgrade!(@os_release.current)
+        upgrade_repos(@os_release.current)
+      end
+
       private
 
       def check_repos(version)

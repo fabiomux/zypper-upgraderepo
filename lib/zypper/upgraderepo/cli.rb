@@ -67,6 +67,10 @@ module Zypper
             options.operation = :reset
           end
 
+          opt.on('-t', '--update', 'Update the repositories versions to the actual OS version') do |v|
+            options.operation = :update
+          end
+
           opt.on('-u', '--upgrade', 'Upgrade to the next version available') do |o|
             options.operation = :upgrade_to_next
           end
