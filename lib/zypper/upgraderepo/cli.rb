@@ -169,8 +169,8 @@ module Zypper
             options.view = :report
           end
 
-          opt.on('--solver', 'Output as INI presenting the best solution to fix the invalid repositories') do |o|
-            options.view = :solver
+          opt.on('--solved', 'Output as INI with the suggestions for the invalid repositories applied') do |o|
+            options.view = :solved
           end
 
           unless ENV['ZYPPER_UPGRADEREPO']

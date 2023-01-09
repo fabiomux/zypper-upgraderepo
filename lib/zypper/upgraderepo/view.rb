@@ -296,7 +296,7 @@ module Zypper
       end
 
 
-      class Solver < Ini
+      class Solved < Ini
 
         def self.alternative(num, repo, max_col, alt)
           self.info num, 'Not Found', repo, false, alt[:url]
@@ -351,9 +351,9 @@ module Zypper
             puts <<-'HEADER'.gsub(/^ +/, '')
               # The interpolated URL is invalid, but being the repository disabled you can
               # keep the old_url in the field below, it will be ignored anyway during the
-              # normal update and upgrade process.
+              # system update and upgrade process until the repository is enabled again.
             HEADER
-            puts "url=#{repo.old_url}"
+            puts "url=#{suggested.empty? ? repo.old_url : suggested}"
           end
           puts "priority=#{repo.priority}"
           puts "status=#{status}"
