@@ -29,26 +29,33 @@ in the related [project page][project_page] on my blog.
 
 ## Usage
 
+***Warning!!! The executables name prior the 1.8.0 version is zypper-upgraderepo, unfortunately the
+RPM package installation introduces annoying copies of the same executable having a version appended
+(zypper-upgraderepo.version, zypper-upgraderepo.rubyversion, zypper-upgraderepo.rubyversion.version)
+interpreted by zypper itself as different subcommands. So I considered more convenient to remove the
+zypper prefix from the original executable and let the sole zypper-upgraderepo-plugin package install
+it as a zypper plugin.***
+
 To check the availability of the current repositories:
 ```shell
-$ zypper-upgraderepo
+$ upgraderepo
 ```
 
 To check the availability of the next version repositories:
 ```shell
-$ zypper-upgraderepo --check-next
+$ upgraderepo --check-next
 ```
 
 To upgrade the repositories to the next version:
 ```shell
-$ sudo zypper-upgraderepo --upgrade
+$ sudo upgraderepo --upgrade
 ```
 
 ## Get help
 
 Where to start:
 ```shell
-$ zypper-upgraderepo --help
+$ upgraderepo --help
 ```
 
 ## More Help:

@@ -34,7 +34,7 @@ module Zypper
           if ENV['ZYPPER_UPGRADEREPO']
             opt.banner = 'Usage: zypper upgraderepo [OPTIONS] [OPERATION]'
           else
-            opt.banner = 'Usage: zypper-upgraderepo [OPTIONS] [OPERATION]'
+            opt.banner = 'Usage: upgraderepo [OPTIONS] [OPERATION]'
           end
 
           opt.separator ''
@@ -67,7 +67,7 @@ module Zypper
             options.operation = :reset
           end
 
-          opt.on('-t', '--update', 'Update the repositories versions to the actual OS version') do |v|
+          opt.on('-t', '--update', 'Update the repositories to the current OS version') do |v|
             options.operation = :update
           end
 
