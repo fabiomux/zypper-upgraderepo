@@ -8,7 +8,7 @@ It can be also be installed as Zypper plugin using the [Zypper Upgraderepo Plugi
 
 ## Installation
 
-There are several options to install the service menus listed in this repository.
+There are a couple of options to install this application.
 
 ### Rubygem
 
@@ -25,7 +25,7 @@ as a common RPM package:
 - install the package from Yast or Zypper.
 
 Being the repository URL slightly changing from a version to another, I included all the steps
-in the related [project page][project_page] on my blog.
+in the related [project page][project_page] at my blog.
 
 ## Usage
 
