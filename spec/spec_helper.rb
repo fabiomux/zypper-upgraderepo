@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require "bundler/setup"
 require "zypper/upgraderepo"
+require "zypper/upgraderepo/cli"
 
 include Zypper::Upgraderepo
 

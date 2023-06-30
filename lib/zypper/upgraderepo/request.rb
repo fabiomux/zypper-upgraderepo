@@ -1,26 +1,28 @@
-require 'delegate'
-require_relative 'traversable.rb'
-require_relative 'requests/local.rb'
-require_relative 'requests/http.rb'
+# frozen_string_literal: true
+
+require "delegate"
+require_relative "traversable"
+require_relative "requests/local"
+require_relative "requests/http"
 
 module Zypper
   module Upgraderepo
-
+    #
+    # Load the right class to handle the protool and
+    # achieve the request..
+    #
     class Request
-
       def self.build(repo, timeout)
-        @@registry ||= self.load_requests
+        @@registry ||= load_requests
 
         raise InvalidProtocol, repo unless @@registry.include? repo.protocol
 
-        Object.const_get(self.find_class(repo)).new(repo, timeout)
+        Object.const_get(find_class(repo)).new(repo, timeout)
       end
 
       def self.protocols
-        self.load_requests.keys
+        load_requests.keys
       end
-
-      private
 
       def self.load_requests
         res = {}
@@ -38,13 +40,10 @@ module Zypper
       def self.find_class(repo)
         domain = URI(repo.url).hostname
 
-        if @@registry[repo.protocol].has_key? domain
-          return @@registry[repo.protocol][domain]
-        else
-          return @@registry[repo.protocol]['default']
-        end
+        return @@registry[repo.protocol][domain] if @@registry[repo.protocol].key? domain
+
+        @@registry[repo.protocol]["default"]
       end
     end
-
   end
 end

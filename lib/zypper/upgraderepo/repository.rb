@@ -1,12 +1,14 @@
-require 'iniparse'
+# frozen_string_literal: true
+
+require "iniparse"
 
 module Zypper
   module Upgraderepo
-
-
+    #
+    # Handle the repository collection.
+    #
     class RepositoryList
-
-      REPOSITORY_PATH = '/etc/zypp/repos.d'
+      REPOSITORY_PATH = "/etc/zypp/repos.d"
 
       attr_reader :list, :max_col
 
@@ -18,19 +20,19 @@ module Zypper
         @only_invalid = options.only_invalid
         @only_protocols = options.only_protocols
         @overrides = options.overrides
-        @upgrade_options = {alias: options.alias, name: options.name}
+        @upgrade_options = { alias: options.alias, name: options.name }
         @list = []
-        @cpu_arch, @arch = `rpm --eval "%cpu_arch;%_arch"`.tr("\n", '').split(';')
+        @cpu_arch, @arch = `rpm --eval "%cpu_arch;%_arch"`.tr("\n", "").split(";")
 
-        Dir.glob(File.join(self.class::REPOSITORY_PATH, '*.repo')).each do |i|
+        Dir.glob(File.join(self.class::REPOSITORY_PATH, "*.repo")).each do |i|
           r = Request.build(Repository.new(i), options.timeout)
           @list << r
         end
         @max_col = @list.max_by { |r| r.name.length }.name.length
 
-        @list = @list.sort_by { |r| r.alias }.map.with_index(1) { |r, i| { num: i, repo: r } }
+        @list = @list.sort_by(&:alias).map.with_index(1) { |r, i| { num: i, repo: r } }
 
-        @list.sort_by! { |x| x[:repo].send(options.sort_by) } if options.sort_by != :alias
+        @list.sort_by! { |x| x[:repo].send(options.sorting_by) } if options.sorting_by != :alias
 
         @only_repo = select_repos(@only_repo) unless @only_repo.nil?
 
@@ -58,7 +60,7 @@ module Zypper
           next if only_repo && !only_repo.include?(x[:num])
           next if only_enabled && !x[:repo].enabled?
           next if only_invalid && x[:repo].available?
-          next if only_protocols && (!only_protocols.include?(x[:repo].protocol))
+          next if only_protocols && !only_protocols.include?(x[:repo].protocol)
 
           yield x[:repo], x[:num] if block_given?
         end
@@ -66,9 +68,7 @@ module Zypper
 
       def resolve_variables!(version)
         each_with_number do |r|
-          if r.url =~ /\$/
-            r.url = expand_variables(r.url, version)
-          end
+          r.url = expand_variables(r.url, version) if r.url =~ /\$/
           r.name = expand_variables(r.name, version)
           r.alias = expand_variables(r.alias, version)
         end
@@ -82,36 +82,36 @@ module Zypper
         end
       end
 
-
       private
 
       def select_repos(repos)
         res = []
         repos.each do |r|
-          if r.to_i > 0
+          if r.to_i.positive?
             res.push r.to_i
           elsif r =~ /^\ *@.*/
-            a = r.gsub(/@/, '').strip
-            @list.select { |x| x[:repo].alias.match?(Regexp.new(a, 'i')) }.each do |l|
+            a = r.gsub(/@/, "").strip
+            @list.select { |x| x[:repo].alias.match?(Regexp.new(a, "i")) }.each do |l|
               res.push l[:num]
             end
           elsif r =~ /^\ *\#.*/
-            u = r.gsub(/\#/, '').strip
-            @list.select { |x| x[:repo].url.match?(Regexp.new(u, 'i')) }.each do |l|
+            u = r.gsub(/\#/, "").strip
+            @list.select { |x| x[:repo].url.match?(Regexp.new(u, "i")) }.each do |l|
               res.push l[:num]
             end
-          elsif r =~ /^\ *\&.*/
-            s = r.gsub(/\&/, '').strip
-            @list.select do |x|
-              x[:repo].alias.match?(Regexp.new(s, 'i')) ||
-              x[:repo].name.match?(Regexp.new(s, 'i')) ||
-              x[:repo].url.match?(Regexp.new(s, 'i'))
-            end.each do |l|
+          elsif r =~ /^\ *&.*/
+            s = r.gsub(/&/, "").strip
+            sel = @list.select do |x|
+              x[:repo].alias.match?(Regexp.new(s, "i")) ||
+                x[:repo].name.match?(Regexp.new(s, "i")) ||
+                x[:repo].url.match?(Regexp.new(s, "i"))
+            end
+            sel.each do |l|
               res.push l[:num]
             end
           else
             n = r.strip
-            @list.select { |x| x[:repo].name.match?(Regexp.new(n, 'i')) }.each do |l|
+            @list.select { |x| x[:repo].name.match?(Regexp.new(n, "i")) }.each do |l|
               res.push l[:num]
             end
           end
@@ -121,75 +121,78 @@ module Zypper
       end
 
       def expand_variables(str, version)
-       str.gsub(/\$releasever_major/, version.split('.')[0])
-          .gsub(/\$releasever_minor/, version.split('.')[1])
-          .gsub(/\$releasever/, version)
-          .gsub(/\$basearch/, @arch)
-          .gsub(/\$arch/, @cpu_arch)
+        str.gsub(/\$releasever_major/, version.split(".")[0])
+           .gsub(/\$releasever_minor/, version.split(".")[1])
+           .gsub(/\$releasever/, version)
+           .gsub(/\$basearch/, @arch)
+           .gsub(/\$arch/, @cpu_arch)
       end
 
       def load_overrides(filename)
         raise FileNotFound, filename unless File.exist?(filename)
+
         ini = IniParse.parse(File.read(filename))
         each_with_number(only_invalid: false) do |repo, num|
-          if x = ini["repository_#{num}"]
-            repo.enable!(x['enabled'])
-            raise UnmatchingOverrides, { num: num, ini: x, repo: repo } if repo.url != x['old_url']
-            if (only_enabled?)
-              raise MissingOverride, { num: num, ini: x } unless x['url'] || x['enabled'] =~ /no|false|0/i
-            else
-              raise MissingOverride, { num: num, ini: x } unless x['url']
-            end
-            @overrides[num] = x['url'] if x['url']
+          next unless (x = ini["repository_#{num}"])
+
+          repo.enable!(x["enabled"])
+          raise UnmatchingOverrides, { num: num, ini: x, repo: repo } if repo.url != x["old_url"]
+
+          if only_enabled?
+            raise MissingOverride, { num: num, ini: x } unless x["url"] || x["enabled"] =~ /no|false|0/i
+          else
+            raise MissingOverride, { num: num, ini: x } unless x["url"]
           end
+          @overrides[num] = x["url"] if x["url"]
         end
       end
-
     end
 
-
+    #
+    # Single repository class.
+    #
     class Repository
       attr_reader :filename, :old_url, :old_alias, :old_name
 
       def initialize(filename)
         @filename = filename
         @repo = IniParse.parse(File.read(filename))
-        @key = get_key
+        @key = read_key
         @old_url = nil
         @old_name = nil
         @old_alias = nil
       end
 
       def enabled?
-        @repo[@key]['enabled'].to_i == 1
+        @repo[@key]["enabled"].to_i == 1
       end
 
-      def enable!(value = true)
-        @repo[@key]['enabled'] = (value.to_s =~ /true|1|yes/i) ? 1 : 0
+      def enable!(value = nil)
+        @repo[@key]["enabled"] = (value || true).to_s =~ /true|1|yes/i ? 1 : 0
       end
 
       def type
-        @repo[@key]['type']
+        @repo[@key]["type"]
       end
 
       def name
-        @repo[@key]['name'] || @key
+        @repo[@key]["name"] || @key
       end
 
       def name=(value)
-        @repo[@key]['name'] = value
+        @repo[@key]["name"] = value
       end
 
       def priority
-        @repo[@key]['priority'] || 99
+        @repo[@key]["priority"] || 99
       end
 
       def url
-        @repo[@key]['baseurl']
+        @repo[@key]["baseurl"]
       end
 
       def url=(value)
-        @repo[@key]['baseurl'] = value
+        @repo[@key]["baseurl"] = value
       end
 
       def protocol
@@ -210,50 +213,45 @@ module Zypper
 
       def alias=(value)
         @repo = IniParse.parse(@repo.to_ini.sub(/\[[^\]]+\]/, "[#{value}]"))
-        @key = get_key
+        @key = read_key
       end
 
       def upgrade!(version, args = {})
-        @old_url ||= self.url
+        @old_url ||= url
         @old_alias ||= self.alias
-        @old_name ||= self.name
+        @old_name ||= name
 
-        if args[:url_override]
-          self.url = args[:url_override]
-        else
-          self.url = self.url.gsub(/\d\d\.\d/, version)
-        end
+        self.url = (args[:url_override] || url.gsub(/\d\d\.\d/, version))
 
         self.alias = self.alias.gsub(/\d\d\.\d/, version) if args[:alias]
-        self.name = self.name.gsub(/\d\d\.\d/, version) if args[:name]
+        self.name = name.gsub(/\d\d\.\d/, version) if args[:name]
       end
 
       def upgraded?(item = :url)
-        (!self.send("old_#{item}").nil?) && (self.send("old_#{item}") != self.send(item))
+        !send("old_#{item}").nil? && (send("old_#{item}") != send(item))
       end
 
       def save
         raise InvalidWritePermissions, @filename unless File.writable? @filename
+
         process, pid = libzypp_process
         raise SystemUpdateRunning, { pid: pid, process: process } if pid
+
         @repo.save(@filename)
       end
-
 
       private
 
       def libzypp_process
-        libpath = `ldd /usr/bin/zypper | grep "libzypp.so"`.split(' => ')[1].split(' ').shift
+        libpath = `ldd /usr/bin/zypper | grep "libzypp.so"`.split(" => ")[1].split.shift
         process = `sudo lsof #{libpath} | tail -n 1`
-        process, pid = process.split(' ')
+        process, pid = process.split
         [process, pid]
       end
 
-      def get_key
-        @repo.to_hash.keys.delete_if {|k| k == '0'}.pop
+      def read_key
+        @repo.to_hash.keys.delete_if { |k| k == "0" }.pop
       end
     end
-
-
   end
 end
