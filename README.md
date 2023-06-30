@@ -6,6 +6,9 @@ when possible.
 
 It can be also be installed as Zypper plugin using the [Zypper Upgraderepo Plugin][zypper_upgraderepo_plugin].
 
+[![Ruby](https://github.com/fabiomux/zypper-upgraderepo/actions/workflows/main.yml/badge.svg)][wf_main]
+[![Gem Version](https://badge.fury.io/rb/zypper-upgraderepo.svg)][gem_version]
+
 ## Installation
 
 There are a couple of options to install this application.
@@ -69,3 +72,5 @@ More info is available at:
 [project_page]: https://freeaptitude.altervista.org/projects/zypper-upgraderepo.html "Zypper-Upgraderepo project page"
 [zypper_upgraderepo_wiki]: https://github.com/fabiomux/zypper-upgraderepo/wiki "Zypper-Upgraderepo wiki page on GitHub"
 [upgrading_with_zypper]: https://freeaptitude.altervista.org/articles/upgrading-opensuse-with-zypper.html "Upgrading openSUSE with Zypper"
+[wf_main]: https://github.com/fabiomux/zypper-upgraderepo/actions/workflows/main.yml
+[gem_version]: https://badge.fury.io/rb/zypper-upgraderepo
