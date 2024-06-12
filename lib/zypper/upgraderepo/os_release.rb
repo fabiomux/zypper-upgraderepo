@@ -10,9 +10,11 @@ module Zypper
     class OsRelease
       attr_reader :custom, :unstable
 
-      OS_VERSIONS = ["13.1", "13.2", "42.1", "42.2", "42.3", "15.0", "15.1", "15.2", "15.3", "15.4", "15.5"].freeze
+      OS_VERSIONS = ["13.1", "13.2",
+                     "42.1", "42.2", "42.3",
+                     "15.0", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6"].freeze
 
-      UNSTABLE_VERSION = "15.6"
+      UNSTABLE_VERSION = "16.0"
 
       OS_RELEASE_FILE = "/etc/os-release"
 
