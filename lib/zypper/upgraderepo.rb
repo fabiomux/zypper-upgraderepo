@@ -99,7 +99,7 @@ module Zypper
         @view_class.header(@repos.max_col)
 
         @repos.each_with_number do |repo, num|
-          @view_class.separator
+          @view_class.separator @repos.max_col
 
           if repo.available?
             @view_class.available num, repo, @repos.max_col
@@ -118,18 +118,20 @@ module Zypper
               @view_class.forbidden num, repo, @repos.max_col
             elsif repo.timeout?
               @view_class.timeout num, repo, @repos.max_col
+            else
+              @view_class.server_error num, repo, @repos.max_col
             end
           end
         end
 
-        @view_class.footer
+        @view_class.footer @repos.max_col
       end
 
       def upgrade_repos(_version)
         @view_class.header(@repos.max_col, upgrade: true)
 
         @repos.each_with_number do |repo, num|
-          @view_class.separator
+          @view_class.separator @repos.max_col
 
           if repo.upgraded?
             @view_class.upgraded num, repo, @repos.max_col
@@ -138,7 +140,7 @@ module Zypper
           end
         end
 
-        @view_class.separator
+        @view_class.separator @repos.max_col
 
         @repos.save
         Messages.ok "Repositories upgraded!"

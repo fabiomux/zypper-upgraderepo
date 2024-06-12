@@ -51,16 +51,22 @@ module Zypper
           info(repo)
         end
 
-        def self.separator
-          puts "-" * 90
+        def self.server_error(num, repo, _max_col)
+          puts " #{num.to_s.rjust(2).bold.red} | Status: #{"Server Error".bold.red}"
+          puts " #{" " * 2} | Hint: #{repo.status}"
+          info(repo)
+        end
+
+        def self.separator(max_col)
+          puts "-" * (max_col + 20)
         end
 
         def self.header(_max_col, _upgrade: false)
           puts "  # | Report"
         end
 
-        def self.footer
-          separator
+        def self.footer(max_col)
+          separator max_col
         end
 
         def self.status(os_release)
@@ -96,8 +102,8 @@ module Zypper
             Messages.ok("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, " ")} " \
                         "| #{repo.enabled? ? " Y " : " N ".yellow} | Unversioned repository")
           else
-            Messages.ok("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col,
-                                                                    " ")} | #{repo.enabled? ? " Y " : " N ".yellow} |")
+            Messages.ok("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, " ")} " \
+                        "| #{repo.enabled? ? " Y " : " N ".yellow} |")
           end
         end
 
@@ -139,16 +145,21 @@ module Zypper
                            "| #{repo.enabled? ? " Y " : " N ".yellow} | #{"Untouched:".bold.yellow} #{repo.old_url}")
         end
 
-        def self.separator
-          puts "-" * 90
+        def self.server_error(num, repo, max_col)
+          Messages.error("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, " ")} " \
+                         "| #{repo.enabled? ? " Y " : " N ".yellow} | #{"Error:".bold.red} #{repo.status}")
+        end
+
+        def self.separator(max_col)
+          puts "-" * (max_col + 20)
         end
 
         def self.header(max_col, upgrade: false)
           puts " St. |  # | #{"Name".ljust(max_col, " ")} | En. | #{upgrade ? "Details" : "Hint"}"
         end
 
-        def self.footer
-          separator
+        def self.footer(max_col)
+          separator max_col
         end
 
         def self.status(os_release)
@@ -188,11 +199,13 @@ module Zypper
 
         def self.untouched(num, repo, max_col); end
 
-        def self.separator; end
+        def self.server_error(num, repo, max_col); end
+
+        def self.separator(_max_col); end
 
         def self.header(max_col, upgrade: false); end
 
-        def self.footer; end
+        def self.footer(_max_col); end
 
         def self.status(os_release)
           puts "#{os_release.seniority} #{os_release.newer.join(" ")}"
@@ -238,13 +251,18 @@ module Zypper
           info num, "Untouched", repo
         end
 
-        def self.separator
+        def self.server_error(num, repo, _max_col)
+          info num, "Server Error", repo
+          puts "error=#{repo.status}"
+        end
+
+        def self.separator(_max_col)
           puts ""
         end
 
         def self.header(max_col, upgrade: false); end
 
-        def self.footer; end
+        def self.footer(_max_col); end
 
         def self.status(os_release)
           puts "[os_release]"
