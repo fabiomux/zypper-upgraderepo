@@ -110,7 +110,7 @@ module Zypper
             options.alias = false
           end
 
-          opt.on("--no-hint", "Don't find a working URL when the current is invalid") do |_o|
+          opt.on("--no-hint", "Don't find a working URL when the current is not valid") do |_o|
             options.hint = false
           end
 
@@ -118,7 +118,7 @@ module Zypper
             options.overrides[r[0].to_i] = r[1]
           end
 
-          opt.on("--load-overrides <FILENAME>", "Check the URLs in the exported FILENAME") do |f|
+          opt.on("--load-overrides <FILENAME>", "Load the repositories' overrides from FILENAME") do |f|
             options.overrides_filename = f
           end
 
@@ -156,19 +156,19 @@ module Zypper
           opt.separator ""
           opt.separator "View options:"
 
-          opt.on("--sort-by-alias", "Sort repositories by alias (Default)") do |_o|
+          opt.on("--sort-by-alias", "Sort the repositories by alias (Default)") do |_o|
             options.sorting_by = :alias
           end
 
-          opt.on("--sort-by-name", "Sort repositories by name") do |_o|
+          opt.on("--sort-by-name", "Sort the repositories by name") do |_o|
             options.sorting_by = :name
           end
 
-          opt.on("--sort-by-priority", "Sort repositories by priority") do |_o|
+          opt.on("--sort-by-priority", "Sort the repositories by priority") do |_o|
             options.sorting_by = :priority
           end
 
-          opt.on("--ini", "Output the result as INI format") do |_o|
+          opt.on("--ini", "Output the result in the INI format") do |_o|
             options.view = :ini
           end
 
@@ -176,11 +176,11 @@ module Zypper
             options.view = :quiet
           end
 
-          opt.on("--report", "View the data as report") do |_o|
+          opt.on("--report", "View the data as a report") do |_o|
             options.view = :report
           end
 
-          opt.on("--solved", "Output as INI with the suggestions for the invalid repositories applied") do |_o|
+          opt.on("--solved", "Output as INI and the URLs' suggestions applied") do |_o|
             options.view = :solved
           end
 
@@ -193,7 +193,7 @@ module Zypper
               exit
             end
 
-            opt.on_tail("-v", "--version", "Show version") do |_o|
+            opt.on_tail("-v", "--version", "Show the version") do |_o|
               puts VERSION
               exit
             end
