@@ -2,39 +2,9 @@
 
 require "spec_helper"
 
-class RepositoryListRspec < RepositoryList
-  REPOSITORY_PATH = File.join([Dir.pwd, "spec", "repos"])
-end
-
-class OsReleaseRspec < OsRelease
-  OS_RELEASE_FILE = File.join([Dir.pwd, "spec", "os-release"])
-end
-
 RSpec.describe RepositoryList do
   before(:all) do
-    @options = CliOptions.new
-
-    @options.operation = :check_current
-    @options.backup_path = Dir.home
-    @options.only_enabled = false
-    @options.alias = true
-    @options.name = true
-    @options.hint = true
-    @options.overrides = {}
-    @options.version = nil
-    @options.sorting_by = :alias
-    @options.view = :table
-    @options.only_repo = nil
-    @options.timeout = 10.0
-    @options.exit_on_fail = false
-    @options.overrides_filename = nil
-    @options.only_invalid = false
-    @options.only_protocols = nil
-    @options.allow_unstable = false
-
-    @os_release = OsReleaseRspec.new(@options)
-
-    @repo_list = RepositoryListRspec.new(@options)
+    @repo_list = RepositoryListRspec.new(RSpec.configuration.cli_options, RSpec.configuration.upgraderepo_variables)
   end
 
   describe "Loading the repositories" do

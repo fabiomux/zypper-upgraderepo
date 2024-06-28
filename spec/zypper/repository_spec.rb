@@ -10,7 +10,7 @@ RSpec.describe Repository do
       "repos/non_oss.repo"
     ].map { |x| File.join [Dir.pwd, "spec", x] }
 
-    @repos = @repo_files.map { |r| Repository.new(r) }
+    @repos = @repo_files.map { |r| Repository.new(r, RSpec.configuration.upgraderepo_variables) }
   end
 
   describe "Loading the single repository" do
