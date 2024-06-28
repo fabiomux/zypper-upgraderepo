@@ -5,6 +5,39 @@ require "iniparse"
 module Zypper
   module Upgraderepo
     #
+    # Calculate and apply the variables that can be
+    # declared within the repository metadata.
+    #
+    class RepositoryVariables
+      VARIABLE_PATH = "/etc/zypp/vars.d"
+
+      VAR_CPU_ARCH, VAR_ARCH = `rpm --eval "%cpu_arch;%_arch"`.tr("\n", "").split(";")
+
+      attr_reader :variables
+
+      def initialize(version)
+        @variables = {
+          releasever_major: version.split(".")[0],
+          releasever_minor: version.split(".")[1],
+          releasever: version,
+          basearch: VAR_ARCH,
+          arch: VAR_CPU_ARCH
+        }
+
+        Dir.glob(File.join(self.class::VARIABLE_PATH, "*")).each do |i|
+          @variables[File.basename(i).to_sym] = File.read(i).strip
+        end
+      end
+
+      def apply(str)
+        str.gsub(/\${?([a-zA-Z0-9_]+)}?/) do
+          last = Regexp.last_match(1)
+          @variables[last.to_sym] || "<Unknown var: $#{last}>"
+        end
+      end
+    end
+
+    #
     # Handle the repository collection.
     #
     class RepositoryList
@@ -12,7 +45,7 @@ module Zypper
 
       attr_reader :list, :max_col
 
-      def initialize(options)
+      def initialize(options, variables)
         @alias = options.alias
         @name = options.name
         @only_repo = options.only_repo
@@ -22,10 +55,10 @@ module Zypper
         @overrides = options.overrides
         @upgrade_options = { alias: options.alias, name: options.name }
         @list = []
-        @cpu_arch, @arch = `rpm --eval "%cpu_arch;%_arch"`.tr("\n", "").split(";")
 
+        @variables = variables
         Dir.glob(File.join(self.class::REPOSITORY_PATH, "*.repo")).each do |i|
-          r = Request.build(Repository.new(i), options.timeout)
+          r = Request.build(Repository.new(i, @variables), options.timeout)
           @list << r
         end
         @max_col = @list.max_by { |r| r.name.length }.name.length
@@ -64,16 +97,6 @@ module Zypper
 
           yield x[:repo], x[:num] if block_given?
         end
-      end
-
-      def resolve_variables!(version)
-        each_with_number do |r|
-          r.url = expand_variables(r.url, version) if r.url =~ /\$/
-          r.name = expand_variables(r.name, version)
-          r.alias = expand_variables(r.alias, version)
-        end
-
-        self
       end
 
       def save
@@ -120,14 +143,6 @@ module Zypper
         res.uniq
       end
 
-      def expand_variables(str, version)
-        str.gsub(/\$releasever_major/, version.split(".")[0])
-           .gsub(/\$releasever_minor/, version.split(".")[1])
-           .gsub(/\$releasever/, version)
-           .gsub(/\$basearch/, @arch)
-           .gsub(/\$arch/, @cpu_arch)
-      end
-
       def load_overrides(filename)
         raise FileNotFound, filename unless File.exist?(filename)
 
@@ -154,13 +169,14 @@ module Zypper
     class Repository
       attr_reader :filename, :old_url, :old_alias, :old_name
 
-      def initialize(filename)
+      def initialize(filename, variables)
         @filename = filename
         @repo = IniParse.parse(File.read(filename))
         @key = read_key
         @old_url = nil
         @old_name = nil
         @old_alias = nil
+        resolve_variables!(variables)
       end
 
       def enabled?
@@ -241,6 +257,14 @@ module Zypper
       end
 
       private
+
+      def resolve_variables!(variables)
+        self.url = variables.apply(url) if url =~ /\$/
+        self.name = variables.apply(name) if name =~ /\$/
+        self.alias = variables.apply(self.alias) if self.alias =~ /\$/
+
+        self
+      end
 
       def libzypp_process
         libpath = `ldd /usr/bin/zypper | grep "libzypp.so"`.split(" => ")[1].split.shift
