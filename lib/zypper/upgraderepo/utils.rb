@@ -92,6 +92,10 @@ module Zypper
       def new_line
         "\n#{self}"
       end
+
+      def none
+        self
+      end
     end
 
     #
