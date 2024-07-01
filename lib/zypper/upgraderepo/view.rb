@@ -57,8 +57,8 @@ module Zypper
           info(repo)
         end
 
-        def self.separator(max_col)
-          puts "-" * (max_col + 20)
+        def self.separator(max_col, char = "-", color = :none)
+          puts (char * (max_col + 20)).send(color)
         end
 
         def self.header(_max_col, _upgrade: false)
@@ -90,6 +90,32 @@ module Zypper
           puts " #{" " * 2} | Priority: #{repo.priority}"
           puts " #{" " * 2} | #{repo.enabled? ? "Enabled: Yes" : "Enabled: No".yellow}"
           puts " #{" " * 2} | Filename: #{repo.filename}"
+        end
+
+        def self.duplicates_header(_max_col)
+          puts "  # | Duplicated repositories"
+        end
+
+        def self.duplicates_item(num, dnum, dcount, repo, _max_col)
+          puts " #{num.to_s.rjust(2).bold.yellow} | Duplicated repository n.#{dnum.to_s.bold}/#{dcount.to_s.bold}"
+          info(repo)
+        end
+
+        def self.duplicates_footer(dcount, total)
+          puts "Total duplicated repositories: #{dcount.to_s.bold.yellow}/#{total}"
+        end
+
+        def self.unused_header(_max_col)
+          puts "  # | Unused repositories"
+        end
+
+        def self.unused_item(num, unum, repo, _max_col)
+          puts " #{num.to_s.rjust(2).bold.yellow} | Unused repository n.#{unum.to_s.bold}"
+          info(repo)
+        end
+
+        def self.unused_footer(ucount, total)
+          puts "Total unused repositories: #{ucount.to_s.bold.yellow}/#{total}"
         end
       end
 
@@ -150,8 +176,8 @@ module Zypper
                          "| #{repo.enabled? ? " Y " : " N ".yellow} | #{"Error:".bold.red} #{repo.status}")
         end
 
-        def self.separator(max_col)
-          puts "-" * (max_col + 20)
+        def self.separator(max_col, char = "-", color = :none)
+          puts (char * (max_col + 20)).send(color)
         end
 
         def self.header(max_col, upgrade: false)
@@ -177,6 +203,34 @@ module Zypper
 
           Messages.warning "The #{"last".bold.red} version should be considered #{"Unstable".bold.red}"
         end
+
+        def self.duplicates_header(max_col)
+          puts " St. |  # | #{"Name".ljust(max_col, " ")} | En. | Details"
+        end
+
+        def self.duplicates_item(num, dnum, dcount, repo, max_col)
+          Messages.warning("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, " ")} " \
+                           "| #{repo.enabled? ? " Y " : " N ".yellow} " \
+                           "| Duplicate n.#{dnum.to_s.bold}/#{dcount.to_s.bold} ")
+        end
+
+        def self.duplicates_footer(dcount, total)
+          puts "Total duplicated repositories: #{dcount.to_s.bold.yellow}/#{total}"
+        end
+
+        def self.unused_header(max_col)
+          puts " St. |  # | #{"Name".ljust(max_col, " ")} | En. | Details"
+        end
+
+        def self.unused_item(num, unum, repo, max_col)
+          Messages.warning("| #{num.to_s.rjust(2)} | #{repo.name.ljust(max_col, " ")} " \
+                           "| #{repo.enabled? ? " Y " : " N ".yellow} " \
+                           "| Unused n.#{unum.to_s.bold}")
+        end
+
+        def self.unused_footer(ucount, total)
+          puts "Total unused repositories: #{ucount.to_s.bold.yellow}/#{total}"
+        end
       end
 
       #
@@ -201,7 +255,7 @@ module Zypper
 
         def self.server_error(num, repo, max_col); end
 
-        def self.separator(_max_col); end
+        def self.separator(_max_col, _char = "-", _color = :none); end
 
         def self.header(max_col, upgrade: false); end
 
@@ -210,6 +264,22 @@ module Zypper
         def self.status(os_release)
           puts "#{os_release.seniority} #{os_release.newer.join(" ")}"
         end
+
+        def self.duplicates_header(_max_col); end
+
+        def self.duplicates_item(num, dnum, _dcount, _repo, _max_col)
+          puts "#{dnum}:#{num} "
+        end
+
+        def self.duplicates_footer(dcount, total); end
+
+        def self.unused_header(_max_col); end
+
+        def self.unused_item(num, _unum, _repo, _max_col)
+          puts num
+        end
+
+        def self.unused_footer(ucount, total); end
       end
 
       #
@@ -256,7 +326,7 @@ module Zypper
           puts "error=#{repo.status}"
         end
 
-        def self.separator(_max_col)
+        def self.separator(_max_col, _char = "-", _color = :none)
           puts ""
         end
 
@@ -313,6 +383,34 @@ module Zypper
           puts "enabled=#{repo.enabled? ? "Yes" : "No"}"
           puts "status=#{status}"
         end
+
+        def self.duplicates_header(_max_col); end
+
+        def self.duplicates_item(num, dnum, dcount, repo, _max_col)
+          puts "[repository_#{num}]" if dnum == 1
+          puts "number_#{dnum}_#{dcount}=#{num}"
+          puts "name_#{dnum}_#{dcount}=#{repo.name}"
+          puts "alias_#{dnum}_#{dcount}=#{repo.alias}"
+          puts "url_#{dnum}_#{dcount}=#{repo.url}"
+          puts "priority_#{dnum}_#{dcount}=#{repo.priority}"
+          puts "enabled_#{dnum}_#{dcount}=#{repo.enabled? ? "Yes" : "No"}"
+        end
+
+        def self.duplicates_footer(dcount, total); end
+
+        def self.unused_header(_max_col); end
+
+        def self.unused_item(num, _unum, repo, _max_col)
+          puts "[repository_#{num}]"
+          puts "number=#{num}"
+          puts "name=#{repo.name}"
+          puts "alias=#{repo.alias}"
+          puts "url=#{repo.url}"
+          puts "priority=#{repo.priority}"
+          puts "enabled=#{repo.enabled? ? "Yes" : "No"}"
+        end
+
+        def self.unused_footer(ucount, total); end
       end
 
       #

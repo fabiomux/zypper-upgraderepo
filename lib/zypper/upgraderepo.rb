@@ -59,6 +59,46 @@ module Zypper
         check_repos(@os_release.last)
       end
 
+      def duplicates
+        dups = {}
+        dcount = 0
+        @view_class.duplicates_header(@repos.max_col)
+        @view_class.separator(@repos.max_col, "=", :yellow)
+        @repos.each_with_number do |repo, num|
+          uri = URI.parse(repo.url)
+          hostname = uri.hostname.split(".")[-2..-1].join(".")
+          idx = URI::HTTP.build(path: uri.path, host: hostname).to_s.gsub(%r{^http://}, "").gsub(%r{/$}, "")
+          dups[idx] ||= []
+          dups[idx] << { num: num, repo: repo }
+        end
+        dups.each do |_key, list|
+          next if list.count < 2
+
+          dcount += list.count.pred
+          list.each_with_index do |l, i|
+            @view_class.duplicates_item(l[:num], i.next, list.count, l[:repo], @repos.max_col)
+            @view_class.separator(@repos.max_col) unless i == list.count.pred
+          end
+          @view_class.separator(@repos.max_col, "=", :yellow)
+        end
+        @view_class.duplicates_footer(dcount, @repos.list.count)
+      end
+
+      def unused
+        ucount = 0
+        @view_class.unused_header(@repos.max_col)
+        @view_class.separator(@repos.max_col)
+        @repos.each_with_number do |repo, num|
+          packs = `zypper -q pa -i -r #{num} 2>/dev/null|grep "^i"|wc -l`.strip.to_i
+          next unless packs.zero?
+
+          ucount += 1
+          @view_class.unused_item(num, ucount, repo, @repos.max_col)
+          @view_class.separator(@repos.max_col)
+        end
+        @view_class.unused_footer(ucount, @repos.list.count)
+      end
+
       def upgrade_to_next
         raise AlreadyUpgraded, "latest" if @os_release.last?
 

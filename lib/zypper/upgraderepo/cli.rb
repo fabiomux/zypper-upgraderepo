@@ -95,6 +95,14 @@ module Zypper
             options.operation = :status
           end
 
+          opt.on("-d", "--duplicates", "Detect the duplicates comparing the URL addresses") do |_o|
+            options.operation = :duplicates
+          end
+
+          opt.on("-z", "--unused", "Prints the unused repositories with zero packages installed") do |_o|
+            options.operation = :unused
+          end
+
           opt.separator ""
           opt.separator "Options:"
 
