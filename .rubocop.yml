@@ -34,6 +34,7 @@ Metrics/ClassLength:
   Exclude:
   - './lib/**/cli.rb'
   - './lib/**/repository.rb'
+  - './lib/**/upgraderepo.rb'
 
 Metrics/BlockLength:
   Enabled: true

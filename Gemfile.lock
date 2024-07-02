@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    zypper-upgraderepo (1.9.0)
+    zypper-upgraderepo (1.10.0)
       iniparse
       minitar
 
