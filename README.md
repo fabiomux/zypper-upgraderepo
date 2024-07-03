@@ -1,7 +1,7 @@
 # Zypper-Upgraderepo
 
-Zypper-Upgraderepo helps to check and upgrade the repositories used in your system for the
-current, next or a custom valid version, reporting the errors and trying to find a replacement
+Zypper-Upgraderepo helps to check and upgrade the configured repositories validating or looking for the
+current, next or a custom valid version, reporting the errors and trying to find an alternative URL
 when possible.
 
 It can be also be installed as Zypper plugin using the [Zypper Upgraderepo Plugin][zypper_upgraderepo_plugin].
@@ -32,24 +32,24 @@ in the related [project page][project_page] at my blog.
 
 ## Usage
 
-***Warning!!! The executables name prior the 1.8.0 version is zypper-upgraderepo, unfortunately the
-RPM package installation introduces annoying copies of the same executable having a version appended
-(zypper-upgraderepo.version, zypper-upgraderepo.rubyversion, zypper-upgraderepo.rubyversion.version)
+**Warning!!! The executables name prior the 1.8.0 version was zypper-upgraderepo, unfortunately the
+RPM package installation introduces annoying copies of the same executable with a Ruby version appended
+(zypper-upgraderepo.*version*, zypper-upgraderepo.*rubyversion*, zypper-upgraderepo.*rubyversion*.*version*)
 interpreted by zypper itself as different subcommands. So I considered more convenient to remove the
 zypper prefix from the original executable and let the sole zypper-upgraderepo-plugin package install
-it as a zypper plugin.***
+it as a zypper plugin.**
 
-To check the availability of the current repositories:
+To check the availability of the **current** repositories:
 ```shell
 $ upgraderepo
 ```
 
-To check the availability of the next version repositories:
+To check the availability of the **next** version repositories:
 ```shell
 $ upgraderepo --check-next
 ```
 
-To upgrade the repositories to the next version:
+To **upgrade** the repositories to the next version:
 ```shell
 $ sudo upgraderepo --upgrade
 ```
@@ -64,8 +64,8 @@ $ upgraderepo --help
 ## More Help:
 
 More info is available at:
-- the [Zypper-Upgraderepo GitHub wiki][zypper_upgraderepo_wiki];
-- the article [Upgrading with Zypper][upgrading_with_zypper] on Freeaptitude blog.
+- The [Zypper-Upgraderepo GitHub wiki][zypper_upgraderepo_wiki];
+- The [Upgrading with Zypper][upgrading_with_zypper] article on Freeaptitude blog.
 
 
 [zypper_upgraderepo_plugin]: https://github.com/fabiomux/zypper-upgraderepo-plugin "Zypper-Upgraderepo Plugin GitHub page"
