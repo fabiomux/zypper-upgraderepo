@@ -61,7 +61,7 @@ module Zypper
           puts (char * (max_col + 20)).send(color)
         end
 
-        def self.header(_max_col, _upgrade: false)
+        def self.header(*)
           puts "  # | Report"
         end
 
