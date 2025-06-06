@@ -100,8 +100,8 @@ module Zypper
       end
 
       def save
-        @list.each do |i|
-          i[:repo].save
+        each_with_number do |repo, _num|
+          repo.save
         end
       end
 
