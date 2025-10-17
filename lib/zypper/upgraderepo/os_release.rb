@@ -19,7 +19,8 @@ module Zypper
       def initialize(options)
         @os_versions = ["13.1", "13.2",
                         "42.1", "42.2", "42.3",
-                        "15.0", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6"]
+                        "15.0", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6",
+                        "16.0"]
 
         if options.allow_unstable
           raise NoUnstableVersionAvailable if UNSTABLE_VERSION.empty?
