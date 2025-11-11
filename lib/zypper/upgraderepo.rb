@@ -71,7 +71,7 @@ module Zypper
           dups[idx] ||= []
           dups[idx] << { num: num, repo: repo }
         end
-        dups.each do |_key, list|
+        dups.each_value do |list|
           next if list.count < 2
 
           dcount += list.count.pred

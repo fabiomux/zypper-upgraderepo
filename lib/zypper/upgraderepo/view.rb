@@ -83,8 +83,11 @@ module Zypper
         end
 
         def self.info(repo)
-          puts " #{" " * 2} | Name: #{repo.name} #{repo.upgraded?(:name) ? "(#{repo.old_name.yellow})" : ""}"
-          puts " #{" " * 2} | Alias: #{repo.alias} #{repo.upgraded?(:alias) ? "(#{repo.old_alias.yellow})" : ""}"
+          old_name = repo.upgraded?(:name) ? "(#{repo.old_name.yellow})" : ""
+          old_alias = repo.upgraded?(:alias) ? "(#{repo.old_alias.yellow})" : ""
+
+          puts " #{" " * 2} | Name: #{repo.name} #{old_name}"
+          puts " #{" " * 2} | Alias: #{repo.alias} #{old_alias}"
           puts " #{" " * 2} | Url: #{repo.url}"
           puts " #{" " * 2} |      (#{repo.old_url.yellow})" if repo.upgraded?
           puts " #{" " * 2} | Priority: #{repo.priority}"

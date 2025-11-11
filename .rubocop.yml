@@ -60,21 +60,7 @@ Metrics/CyclomaticComplexity:
   - './lib/**/view.rb'
   - './lib/**/traversable.rb'
 
-Lint/UriEscapeUnescape:
-  Enabled: false
-
-Lint/UnusedMethodArgument:
-  Enabled: true
-  Exclude:
-  - './lib/**/local.rb'
-
 Style/MixinUsage:
   Enabled: true
   Exclude:
   - './spec/**/*'
-
-Style/FrozenStringLiteralComment:
-  Enabled: true
-  Exclude:
-  - './bin/*'
-  - './exe/*'

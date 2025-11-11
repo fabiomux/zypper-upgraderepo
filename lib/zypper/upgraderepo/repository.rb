@@ -118,12 +118,12 @@ module Zypper
               res.push l[:num]
             end
           elsif r =~ /^\ *\#.*/
-            u = r.gsub(/\#/, "").strip
+            u = r.gsub("#", "").strip
             @list.select { |x| x[:repo].url.match?(Regexp.new(u, "i")) }.each do |l|
               res.push l[:num]
             end
           elsif r =~ /^\ *&.*/
-            s = r.gsub(/&/, "").strip
+            s = r.gsub("&", "").strip
             sel = @list.select do |x|
               x[:repo].alias.match?(Regexp.new(s, "i")) ||
                 x[:repo].name.match?(Regexp.new(s, "i")) ||

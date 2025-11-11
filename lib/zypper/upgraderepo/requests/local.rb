@@ -11,7 +11,7 @@ module Zypper
       attr_reader :dir_path
 
       def initialize(obj, _timeout)
-        super obj
+        super(obj)
       end
 
       def available?
@@ -48,13 +48,15 @@ module Zypper
 
       private
 
+      # rubocop: disable Lint/UnusedMethodArgument
       def ping(uri = nil, head: true)
         @dir_path ||= URI(url).path
 
         @dir_path = uri.to_s =~ %r{^/} ? uri.to_s : URI(uri.to_s).path if uri
 
-        URI.unescape(@dir_path)
+        URI::DEFAULT_PARSER.unescape(@dir_path)
       end
+      # rubocop: enable Lint/UnusedMethodArgument
     end
 
     module Requests
@@ -88,12 +90,12 @@ module Zypper
         private
 
         def repodata?(uri)
-          File.exist? URI.unescape(repodata_uri(uri).path)
+          File.exist? URI::DEFAULT_PARSER.unescape(repodata_uri(uri).path)
         end
 
         def subfolders
           Dir.glob("#{ping.gsub(%r{/$}, "")}/*/").map do |x|
-            URI.escape(x.gsub(%r{/$}, "").gsub(ping, "").gsub(%r{^/}, ""))
+            URI::DEFAULT_PARSER.escape(x.gsub(%r{/$}, "").gsub(ping, "").gsub(%r{^/}, ""))
           end
         end
       end

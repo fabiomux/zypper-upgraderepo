@@ -135,7 +135,7 @@ module Zypper
     #
     class FileNotFound < StandardError
       def initialize(filename)
-        super "The File #{filename} doesn't exist."
+        super("The File #{filename} doesn't exist.")
       end
     end
 
@@ -144,7 +144,7 @@ module Zypper
     #
     class ReleaseFileNotFound < StandardError
       def initialize
-        super "The release file is not found."
+        super("The release file is not found.")
       end
     end
 
@@ -153,7 +153,7 @@ module Zypper
     #
     class InvalidProtocol < StandardError
       def initialize(repo)
-        super "The repository #{repo.name} has an unknown protocol: #{repo.protocol}; disable it to continue."
+        super("The repository #{repo.name} has an unknown protocol: #{repo.protocol}; disable it to continue.")
       end
     end
 
@@ -162,7 +162,7 @@ module Zypper
     #
     class InvalidVersion < StandardError
       def initialize(version)
-        super "The version #{version} is not valid"
+        super("The version #{version} is not valid")
       end
     end
 
@@ -171,7 +171,7 @@ module Zypper
     #
     class InvalidWritePermissions < StandardError
       def initialize(filename)
-        super "Don't have the right permission to write #{filename}"
+        super("Don't have the permissions to write #{filename}")
       end
 
       def error_code
@@ -184,7 +184,7 @@ module Zypper
     #
     class SystemUpdateRunning < StandardError
       def initialize(args)
-        super "The application #{args[:process].bold} with pid #{args[:pid].bold} is running a system update!"
+        super("The application #{args[:process].bold} with pid #{args[:pid].bold} is running a system update!")
       end
 
       def error_code
@@ -197,8 +197,8 @@ module Zypper
     #
     class UnableToUpgrade < StandardError
       def initialize(args)
-        super "The repository n.#{args[:num].to_s.bold.red} named #{args[:repo].name.bold.red} " \
-              "can't be upgraded, a manual check is required!"
+        super("The repository n.#{args[:num].to_s.bold.red} named #{args[:repo].name.bold.red} " \
+              "can't be upgraded, a manual check is required!")
       end
 
       def error_code
@@ -211,8 +211,8 @@ module Zypper
     #
     class MissingOverride < StandardError
       def initialize(args)
-        super "The repository n.#{args[:num].to_s.bold.red} named #{args[:ini]["name"].bold.red} " \
-              "doesn't contain the URL key!"
+        super("The repository n.#{args[:num].to_s.bold.red} named #{args[:ini]["name"].bold.red} " \
+              "doesn't contain the URL key!")
       end
 
       def error_code
@@ -225,8 +225,8 @@ module Zypper
     #
     class UnmatchingOverrides < StandardError
       def initialize(args)
-        super "The repository n.#{args[:num]} named #{args[:repo].name.bold.red} doesn't match with " \
-              "the repository named #{args[:ini]["name"].bold.red} in the ini file"
+        super("The repository n.#{args[:num]} named #{args[:repo].name.bold.red} doesn't match with " \
+              "the repository named #{args[:ini]["name"].bold.red} in the ini file")
       end
 
       def error_code
@@ -239,7 +239,7 @@ module Zypper
     #
     class AlreadyUpgraded < StandardError
       def initialize(version)
-        super "The system is already upgraded to the #{version} version"
+        super("The system is already upgraded to the #{version} version")
       end
 
       def error_code
@@ -252,7 +252,7 @@ module Zypper
     #
     class NoUnstableVersionAvailable < StandardError
       def initialize
-        super "No unstable version is available, remove the --allow-unstable switch to continue"
+        super("No unstable version is available, remove the --allow-unstable switch to continue")
       end
 
       def error_code
@@ -264,7 +264,7 @@ module Zypper
     # No internet connection.
     class NoConnection < StandardError
       def initialize
-        super "Internet connection has some trouble"
+        super("Internet connection has some trouble")
       end
 
       def error_code
@@ -277,7 +277,7 @@ module Zypper
     #
     class Interruption < StandardError
       def initialize
-        super "Ok ok... Exiting!"
+        super("Ok ok... Exiting!")
       end
     end
 
