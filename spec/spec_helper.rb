@@ -4,12 +4,10 @@ require "bundler/setup"
 require "zypper/upgraderepo"
 require "zypper/upgraderepo/cli"
 
-include Zypper::Upgraderepo
-
 #
 # Override the variables' calculation.
 #
-class RepositoryVariablesRSpec < RepositoryVariables
+class RepositoryVariablesRSpec < Zypper::Upgraderepo::RepositoryVariables
   VAR_CPU_ARCH = "x86_64"
   VAR_ARCH = "x86_64"
 end
@@ -17,14 +15,14 @@ end
 #
 # Override the os-release file.
 #
-class OsReleaseRspec < OsRelease
+class OsReleaseRspec < Zypper::Upgraderepo::OsRelease
   OS_RELEASE_FILE = File.join([Dir.pwd, "spec", "os-release"])
 end
 
 #
 # Override the repository list.
 #
-class RepositoryListRspec < RepositoryList
+class RepositoryListRspec < Zypper::Upgraderepo::RepositoryList
   REPOSITORY_PATH = File.join([Dir.pwd, "spec", "repos"])
 end
 
@@ -39,25 +37,9 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  @options = CliOptions.new
+  include Zypper::Upgraderepo
 
-  @options.operation = :check_current
-  @options.backup_path = Dir.home
-  @options.only_enabled = false
-  @options.alias = true
-  @options.name = true
-  @options.hint = true
-  @options.overrides = {}
-  @options.version = nil
-  @options.sorting_by = :alias
-  @options.view = :table
-  @options.only_repo = nil
-  @options.timeout = 10.0
-  @options.exit_on_fail = false
-  @options.overrides_filename = nil
-  @options.only_invalid = false
-  @options.only_protocols = nil
-  @options.allow_unstable = false
+  @options = OptParseMain.parse(["--check-current"])
 
   @os_release = OsReleaseRspec.new(@options)
 

@@ -2,62 +2,38 @@
 
 require "spec_helper"
 
-RSpec.describe RepositoryList do
-  before(:all) do
-    @repo_list = RepositoryListRspec.new(RSpec.configuration.cli_options, RSpec.configuration.upgraderepo_variables)
+def remap_list(field)
+  res = []
+  repo_list.each_with_number { |repo, _num| res << repo.send(field) }
+  res
+end
+
+RSpec.describe Zypper::Upgraderepo::RepositoryList do
+  let(:repo_list) do
+    RepositoryListRspec.new(RSpec.configuration.cli_options, RSpec.configuration.upgraderepo_variables)
   end
 
-  describe "Loading the repositories" do
-    it "Returns the repository names" do
-      res = []
-      @repo_list.each_with_number do |repo, _num|
-        res << repo.name
-      end
+  let(:repo_names) { remap_list(:name) }
+  let(:repo_aliases) { remap_list(:alias) }
+  let(:repo_available) { remap_list(:available?) }
 
-      expect(res.sort).to eq([
-        "Packman_Leap_15.4",
-        "openSUSE_Leap_15.4_OSS",
-        "openSUSE_Leap_15.4_non-OSS",
-        "openSUSE_Leap_15.3_debug_non-OSS"
-      ].sort)
+  context "Loading the repositories" do
+    it "Returns the repository names" do
+      expect(repo_names.sort).to eq(["Packman_Leap_15.4", "openSUSE_Leap_15.4_OSS",
+                                     "openSUSE_Leap_15.4_non-OSS", "openSUSE_Leap_15.3_debug_non-OSS"].sort)
     end
 
     it "Returns the repository aliases" do
-      res = []
-      @repo_list.each_with_number do |repo, _num|
-        res << repo.alias
-      end
-
-      expect(res.sort).to eq(%w[
-        Packman
-        OSS
-        non_OSS
-        Debug_non_OSS
-      ].sort)
+      expect(repo_aliases.sort).to eq(%w[Packman OSS non_OSS Debug_non_OSS].sort)
     end
 
     it "Checks if repositories are available" do
-      res = []
-      @repo_list.each_with_number do |repo, _num|
-        res << repo.available?
-      end
-
-      expect(res).to eq([
-                          true,
-                          true,
-                          true,
-                          true
-                        ])
+      expect(repo_available).to eq([true, true, true, true])
     end
 
     it "Checks for openSUSE Leap 15.4 and detects no invalid repository" do
-      res = []
-      @repo_list.upgrade!("15.4")
-      @repo_list.each_with_number do |repo, _num|
-        res << repo.available?
-      end
-
-      expect(res.select { |x| x == false }.count).to eq(0)
+      repo_list.upgrade!("15.4")
+      expect(repo_available.select { |x| x == false }.count).to eq(0)
     end
   end
 end
