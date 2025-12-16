@@ -107,36 +107,50 @@ module Zypper
 
       private
 
+      def select_for_name(str)
+        regexp = Regexp.new(str.strip, "i")
+        @list.select do |x|
+          yield x[:repo], x[:num] if x[:repo].name.match?(regexp) && block_given?
+        end
+      end
+
+      def select_for_alias(str)
+        regexp = Regexp.new(str.gsub("@", "").strip, "i")
+        @list.select do |x|
+          yield x[:repo], x[:num] if x[:repo].alias.match?(regexp)
+        end
+      end
+
+      def select_for_url(str)
+        regexp = Regexp.new(str.gsub("#", "").strip, "i")
+        @list.select do |x|
+          yield x[:repo], x[:num] if x[:repo].url.match?(regexp)
+        end
+      end
+
+      def select_for_any(str)
+        regexp = Regexp.new(str.gsub("?", "").strip, "i")
+        @list.select do |x|
+          yield x[:repo], x[:num] if x[:repo].name.match?(regexp) ||
+                                     x[:repo].alias.match?(regexp) ||
+                                     x[:repo].url.match?(regexp)
+        end
+      end
+
       def select_repos(repos)
         res = []
         repos.each do |r|
           if r.to_i.positive?
             res.push r.to_i
           elsif r =~ /^\ *@.*/
-            a = r.gsub(/@/, "").strip
-            @list.select { |x| x[:repo].alias.match?(Regexp.new(a, "i")) }.each do |l|
-              res.push l[:num]
-            end
+            select_for_alias(r) { |_, num| res.push num }
           elsif r =~ /^\ *\#.*/
-            u = r.gsub("#", "").strip
-            @list.select { |x| x[:repo].url.match?(Regexp.new(u, "i")) }.each do |l|
-              res.push l[:num]
-            end
-          elsif r =~ /^\ *&.*/
-            s = r.gsub("&", "").strip
-            sel = @list.select do |x|
-              x[:repo].alias.match?(Regexp.new(s, "i")) ||
-                x[:repo].name.match?(Regexp.new(s, "i")) ||
-                x[:repo].url.match?(Regexp.new(s, "i"))
-            end
-            sel.each do |l|
-              res.push l[:num]
-            end
+            select_for_url(r) { |_, num| res.push num }
+          elsif r =~ /^\ *\?.*/
+            select_for_any(r) { |_, num| res.push num }
           else
-            n = r.strip
-            @list.select { |x| x[:repo].name.match?(Regexp.new(n, "i")) }.each do |l|
-              res.push l[:num]
-            end
+            puts r
+            select_for_name(r) { |_, num| res.push num }
           end
         end
 

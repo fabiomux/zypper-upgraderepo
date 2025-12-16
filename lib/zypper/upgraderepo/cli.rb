@@ -148,7 +148,7 @@ module Zypper
 
           opt.on("--only-repo <NUMBER|NAME|@ALIAS|#URL|&ANY>[,NUMBER2|NAME2|@ALIAS2|#URL2|&ANY2,...]",
                  "Include only the repositories specified by a NUMBER or a string matching the NAME, " \
-                 "@ALIAS, #URL, or &ANY of them") do |o|
+                 "@ALIAS, #URL, or ?ANY of them") do |o|
             options.only_repo = o.split(",")
           end
 
