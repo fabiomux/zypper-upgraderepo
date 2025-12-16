@@ -17,7 +17,7 @@ module Zypper
     # Parsing the input data.
     #
     class OptParseMain
-      def self.parse(_args)
+      def self.parse(args)
         options = CliOptions.new
         options.operation = :check_current
         options.backup_path = Dir.home
@@ -208,11 +208,11 @@ module Zypper
           end
         end
 
-        if ARGV.empty?
+        if args.empty?
           puts opt_parser
           exit
         else
-          opt_parser.parse!(ARGV)
+          opt_parser.parse!(args)
         end
 
         options
