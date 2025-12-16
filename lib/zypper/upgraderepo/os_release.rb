@@ -96,6 +96,14 @@ module Zypper
       def current?(version)
         @os_versions.index(version) == @current_idx
       end
+
+      def requires_v2?(version)
+        if `uname -m` =~ /x86_64/
+          @os_versions.index(version) > 11
+        else
+          false
+        end
+      end
     end
   end
 end
