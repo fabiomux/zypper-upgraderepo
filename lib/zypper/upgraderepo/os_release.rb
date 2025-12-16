@@ -104,6 +104,13 @@ module Zypper
           false
         end
       end
+
+      def v2?
+        flags = `cat /proc/cpuinfo`.split("\n").grep(/^flags.*:/).first.split
+        %w[cx16 lahf_lm popcnt sse4_1 sse4_2 ssse3].reduce(true) do |res, f|
+          flags.include?(f) && res
+        end
+      end
     end
   end
 end
