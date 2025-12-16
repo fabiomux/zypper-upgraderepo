@@ -136,6 +136,8 @@ module Zypper
       private
 
       def check_repos(version)
+        check_requirements(version)
+
         @view_class.header(@repos.max_col)
 
         @repos.each_with_number do |repo, num|
@@ -184,6 +186,12 @@ module Zypper
 
         @repos.save
         Messages.ok "Repositories upgraded!"
+      end
+
+      def check_requirements(version)
+        return unless @os_release.requires_v2?(version)
+
+        raise UnsupportedV2 unless @os_release.v2?
       end
     end
   end

@@ -273,6 +273,19 @@ module Zypper
     end
 
     #
+    # No support for x86_64-v2 instructions.
+    #
+    class UnsupportedV2 < StandardError
+      def initialize
+        super("The CPU doesn't support the x86_64-v2 instruction set required by openSUSE 16.0 and sup.")
+      end
+
+      def error_code
+        16
+      end
+    end
+
+    #
     # Ctrl + C message error.
     #
     class Interruption < StandardError
