@@ -89,8 +89,7 @@ module Zypper
         @view_class.unused_header(@repos.max_col)
         @view_class.separator(@repos.max_col)
         @repos.each_with_number do |repo, num|
-          packs = `zypper -q pa -i -r #{num} 2>/dev/null|grep "^i"|wc -l`.strip.to_i
-          next unless packs.zero?
+          next unless @repos.unused?(num)
 
           ucount += 1
           @view_class.unused_item(num, ucount, repo, @repos.max_col)

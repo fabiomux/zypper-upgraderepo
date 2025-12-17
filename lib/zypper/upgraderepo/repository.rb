@@ -105,6 +105,10 @@ module Zypper
         end
       end
 
+      def unused?(num)
+        `zypper -q pa -i -r #{num} 2>/dev/null|grep "^i"|wc -l`.strip.to_i.zero?
+      end
+
       private
 
       def select_for_name(str)
