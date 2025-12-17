@@ -60,26 +60,12 @@ module Zypper
       end
 
       def duplicates
-        dups = {}
-        dcount = 0
         @view_class.duplicates_header(@repos.max_col)
         @view_class.separator(@repos.max_col, "=", :yellow)
-        @repos.each_with_number do |repo, num|
-          uri = URI.parse(repo.url)
-          hostname = uri.hostname.split(".")[-2..-1].join(".")
-          idx = URI::HTTP.build(path: uri.path, host: hostname).to_s.gsub(%r{^http://}, "").gsub(%r{/$}, "")
-          dups[idx] ||= []
-          dups[idx] << { num: num, repo: repo }
-        end
-        dups.each_value do |list|
-          next if list.count < 2
-
+        dcount = 0
+        @repos.duplicates.each_value do |list|
           dcount += list.count.pred
-          list.each_with_index do |l, i|
-            @view_class.duplicates_item(l[:num], i.next, list.count, l[:repo], @repos.max_col)
-            @view_class.separator(@repos.max_col) unless i == list.count.pred
-          end
-          @view_class.separator(@repos.max_col, "=", :yellow)
+          print_duplicates list
         end
         @view_class.duplicates_footer(dcount, @repos.list.count)
       end
@@ -133,6 +119,14 @@ module Zypper
       end
 
       private
+
+      def print_duplicates(list)
+        list.each_with_index do |l, i|
+          @view_class.duplicates_item(l[:num], i.next, list.count, l[:repo], @repos.max_col)
+          @view_class.separator(@repos.max_col) unless i == list.count.pred
+        end
+        @view_class.separator(@repos.max_col, "=", :yellow)
+      end
 
       def check_repos(version)
         check_requirements(version)

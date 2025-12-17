@@ -109,7 +109,23 @@ module Zypper
         `zypper -q pa -i -r #{num} 2>/dev/null|grep "^i"|wc -l`.strip.to_i.zero?
       end
 
+      def duplicates
+        group_for_url.delete_if { |_, v| v.length < 2 }
+      end
+
       private
+
+      def group_for_url
+        dups = {}
+        each_with_number do |repo, num|
+          uri = URI.parse(repo.url)
+          hostname = uri.hostname.split(".")[-2..-1].join(".")
+          idx = URI::HTTP.build(path: uri.path, host: hostname).to_s.gsub(%r{^http://}, "").gsub(%r{/$}, "")
+          dups[idx] ||= []
+          dups[idx] << { num: num, repo: repo }
+        end
+        dups
+      end
 
       def select_for_name(str)
         regexp = Regexp.new(str.strip, "i")
