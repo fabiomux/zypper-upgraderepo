@@ -68,6 +68,7 @@ module Zypper
         http.request(request)
       end
 
+      # rubocop: disable Metrics/MethodLength
       def ping(uri = nil, head: true, cache: true)
         begin
           if @page.nil? || uri
@@ -84,6 +85,7 @@ module Zypper
         end
         cache ? @page : unpage
       end
+      # rubocop: enable Metrics/MethodLength
     end
 
     module Requests

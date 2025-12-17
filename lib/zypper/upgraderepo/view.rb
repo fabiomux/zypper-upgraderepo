@@ -348,7 +348,6 @@ module Zypper
         end
 
         def self.info(num, status, repo, valid: true, suggested: "")
-          @@number = num
           puts "[repository_#{num}]"
           puts "name=#{repo.name}"
           puts "alias=#{repo.alias}"
@@ -427,7 +426,6 @@ module Zypper
         end
 
         def self.info(num, status, repo, valid: true, suggested: "")
-          @@number = num
           puts "[repository_#{num}]"
           puts "name=#{repo.name}"
           puts "alias=#{repo.alias}"

@@ -128,6 +128,27 @@ module Zypper
         @view_class.separator(@repos.max_col, "=", :yellow)
       end
 
+      # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
+      def print_checked_repo(num, repo, version)
+        if repo.redirected?
+          @view_class.redirected num, repo, @repos.max_col, repo.redirected_to
+        elsif repo.not_found?
+          if @print_hint
+            @view_class.alternative num, repo, @repos.max_col, repo.evaluate_alternative(version)
+          else
+            @view_class.not_found num, repo, @repos.max_col
+          end
+        elsif repo.forbidden?
+          @view_class.forbidden num, repo, @repos.max_col
+        elsif repo.timeout?
+          @view_class.timeout num, repo, @repos.max_col
+        else
+          @view_class.server_error num, repo, @repos.max_col
+        end
+      end
+      # rubocop: enable Metrics/AbcSize, Metrics/MethodLength
+
+      # rubocop: disable Metrics/MethodLength
       def check_repos(version)
         check_requirements(version)
 
@@ -141,26 +162,14 @@ module Zypper
           else
             raise UnableToUpgrade, { num: num, repo: repo } if @exit_on_fail
 
-            if repo.redirected?
-              @view_class.redirected num, repo, @repos.max_col, repo.redirected_to
-            elsif repo.not_found?
-              if @print_hint
-                @view_class.alternative num, repo, @repos.max_col, repo.evaluate_alternative(version)
-              else
-                @view_class.not_found num, repo, @repos.max_col
-              end
-            elsif repo.forbidden?
-              @view_class.forbidden num, repo, @repos.max_col
-            elsif repo.timeout?
-              @view_class.timeout num, repo, @repos.max_col
-            else
-              @view_class.server_error num, repo, @repos.max_col
-            end
+            print_checked_repo num, repo, version
           end
         end
-
         @view_class.footer @repos.max_col
       end
+      # rubocop: enable Metrics/MethodLength
+
+      # rubocop: disable Metrics/MethodLength
       def upgrade_repos(version)
         check_requirements(version)
 
@@ -181,6 +190,7 @@ module Zypper
         @repos.save
         Messages.ok "Repositories upgraded!"
       end
+      # rubocop: enable Metrics/MethodLength
 
       def check_requirements(version)
         return unless @os_release.requires_v2?(version)

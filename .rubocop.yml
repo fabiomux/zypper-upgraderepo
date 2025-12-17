@@ -1,10 +1,11 @@
+# plugins:
+  # - rubocop-rake
+  # - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 2.5
   NewCops: enable
   SuggestExtensions: false
-
-Style/ClassVars:
-  Enabled: false
 
 Style/StringLiterals:
   Enabled: true
@@ -17,50 +18,33 @@ Style/StringLiteralsInInterpolation:
 Layout/LineLength:
   Max: 120
 
-Naming/FileName:
-  Enabled: false
-
 Metrics/MethodLength:
-  Enabled: false
+  Exclude:
+    - './lib/**/view.rb'
+    - './lib/**/cli.rb'
+    - './lib/**/traversable.rb'
 
 Metrics/AbcSize:
-  Enabled: false
-
-Lint/DuplicateBranch:
-  Enabled: false
+  Exclude:
+    - './lib/**/view.rb'
+    - './lib/**/traversable.rb'
+    - './lib/**/cli.rb'
 
 Metrics/ClassLength:
-  Enabled: true
   Exclude:
-  - './lib/**/cli.rb'
-  - './lib/**/repository.rb'
-  - './lib/**/upgraderepo.rb'
+    - './lib/**/cli.rb'
+    - './lib/**/upgraderepo.rb'
 
 Metrics/BlockLength:
-  Enabled: true
   Exclude:
-  - '*.gemspec'
-  - './lib/**/cli.rb'
-  - './lib/**/repository.rb'
-  - './spec/**/*'
+    - './lib/**/cli.rb'
 
 Metrics/PerceivedComplexity:
-  Enabled: true
   Exclude:
-  - './lib/**/upgraderepo.rb'
-  - './lib/**/repository.rb'
-  - './lib/**/view.rb'
-  - './lib/**/traversable.rb'
+    - './lib/**/view.rb'
+    - './lib/**/traversable.rb'
 
 Metrics/CyclomaticComplexity:
-  Enabled: true
   Exclude:
-  - './lib/**/upgraderepo.rb'
-  - './lib/**/repository.rb'
-  - './lib/**/view.rb'
-  - './lib/**/traversable.rb'
-
-Style/MixinUsage:
-  Enabled: true
-  Exclude:
-  - './spec/**/*'
+    - './lib/**/view.rb'
+    - './lib/**/traversable.rb'

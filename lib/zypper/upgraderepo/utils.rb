@@ -111,6 +111,7 @@ module Zypper
     # Color the error message.
     #
     class Messages
+      # rubocop: disable Metrics/AbcSize
       def self.error(err)
         if err.instance_of?(String)
           puts " [E] ".bold.red + err
@@ -120,6 +121,7 @@ module Zypper
           warn "Error! ".bold.red + err.message
         end
       end
+      # rubocop: enable Metrics/AbcSize
 
       def self.ok(msg)
         puts " [V] ".bold.green + msg
@@ -262,6 +264,7 @@ module Zypper
 
     #
     # No internet connection.
+    #
     class NoConnection < StandardError
       def initialize
         super("Internet connection has some trouble")

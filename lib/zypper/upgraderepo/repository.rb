@@ -40,32 +40,22 @@ module Zypper
     #
     # Handle the repository collection.
     #
+    # rubocop: disable Metrics/ClassLength
     class RepositoryList
       REPOSITORY_PATH = "/etc/zypp/repos.d"
 
       attr_reader :list, :max_col
 
       def initialize(options, variables)
-        @alias = options.alias
-        @name = options.name
-        @only_repo = options.only_repo
-        @only_enabled = options.only_enabled
-        @only_invalid = options.only_invalid
-        @only_protocols = options.only_protocols
-        @overrides = options.overrides
-        @upgrade_options = { alias: options.alias, name: options.name }
-        @list = []
+        initialize_options(options)
 
         @variables = variables
-        Dir.glob(File.join(self.class::REPOSITORY_PATH, "*.repo")).each do |i|
-          r = Request.build(Repository.new(i, @variables), options.timeout)
-          @list << r
-        end
+
+        initialize_list(options)
+
         @max_col = @list.max_by { |r| r.name.length }.name.length
 
-        @list = @list.sort_by(&:alias).map.with_index(1) { |r, i| { num: i, repo: r } }
-
-        @list.sort_by! { |x| x[:repo].send(options.sorting_by) } if options.sorting_by != :alias
+        sort_list(options)
 
         @only_repo = select_repos(@only_repo) unless @only_repo.nil?
 
@@ -83,17 +73,12 @@ module Zypper
         end
       end
 
+      # TODO: Allow --only-used/unused param as filter
       def each_with_number(options = {})
-        only_repo = options[:only_repo].nil? ? @only_repo : options[:only_repo]
-        only_enabled = options[:only_enabled].nil? ? @only_enabled : options[:only_enabled]
-        only_invalid = options[:only_invalid].nil? ? @only_invalid : options[:only_invalid]
-        only_protocols = options[:only_protocols].nil? ? @only_protocols : options[:only_protocols]
+        f_o = filter_options(options)
 
         @list.each do |x|
-          next if only_repo && !only_repo.include?(x[:num])
-          next if only_enabled && !x[:repo].enabled?
-          next if only_invalid && x[:repo].available?
-          next if only_protocols && !only_protocols.include?(x[:repo].protocol)
+          next if next_repo? x[:repo], x[:num], f_o
 
           yield x[:repo], x[:num] if block_given?
         end
@@ -114,6 +99,48 @@ module Zypper
       end
 
       private
+
+      def initialize_list(options)
+        @list = []
+        Dir.glob(File.join(self.class::REPOSITORY_PATH, "*.repo")).each do |i|
+          r = Request.build(Repository.new(i, @variables), options.timeout)
+          @list << r
+        end
+      end
+
+      def sort_list(options)
+        @list = @list.sort_by(&:alias).map.with_index(1) { |r, i| { num: i, repo: r } }
+        @list.sort_by! { |x| x[:repo].send(options.sorting_by) } if options.sorting_by != :alias
+      end
+
+      def initialize_options(options)
+        @alias = options.alias
+        @name = options.name
+        @only_repo = options.only_repo
+        @only_enabled = options.only_enabled
+        @only_invalid = options.only_invalid
+        @only_protocols = options.only_protocols
+        @overrides = options.overrides
+        @upgrade_options = { alias: options.alias, name: options.name }
+      end
+
+      def filter_options(options)
+        {
+          only_repo: options[:only_repo].nil? ? @only_repo : options[:only_repo],
+          only_enabled: options[:only_enabled].nil? ? @only_enabled : options[:only_enabled],
+          only_invalid: options[:only_invalid].nil? ? @only_invalid : options[:only_invalid],
+          only_protocols: options[:only_protocols].nil? ? @only_protocols : options[:only_protocols]
+        }
+      end
+
+      # rubocop: disable Metrics/CyclomaticComplexity
+      def next_repo?(repo, num, options)
+        (options[:only_repo] && !options[:only_repo].include?(num)) ||
+          (options[:only_enabled] && !repo.enabled?) ||
+          (options[:only_invalid] && repo.available?) ||
+          (options[:only_protocols] && !options[:only_protocols].include?(repo.protocol))
+      end
+      # rubocop: enable Metrics/CyclomaticComplexity
 
       def group_for_url
         dups = {}
@@ -157,6 +184,7 @@ module Zypper
         end
       end
 
+      # rubocop: disable Metrics/AbcSize, Metrics/MethodLength
       def select_repos(repos)
         res = []
         repos.each do |r|
@@ -176,6 +204,17 @@ module Zypper
 
         res.uniq
       end
+      # rubocop: enable Metrics/AbcSize, Metrics/MethodLength
+
+      def check_for_override(repo, num, ini)
+        raise UnmatchingOverrides, { num: num, ini: ini, repo: repo } if repo.url != ini["old_url"]
+
+        if only_enabled?
+          raise MissingOverride, { num: num, ini: ini } unless ini["url"] || ini["enabled"] =~ /no|false|0/i
+        else
+          raise MissingOverride, { num: num, ini: ini } unless ini["url"]
+        end
+      end
 
       def load_overrides(filename)
         raise FileNotFound, filename unless File.exist?(filename)
@@ -185,17 +224,12 @@ module Zypper
           next unless (x = ini["repository_#{num}"])
 
           repo.enable!(x["enabled"])
-          raise UnmatchingOverrides, { num: num, ini: x, repo: repo } if repo.url != x["old_url"]
-
-          if only_enabled?
-            raise MissingOverride, { num: num, ini: x } unless x["url"] || x["enabled"] =~ /no|false|0/i
-          else
-            raise MissingOverride, { num: num, ini: x } unless x["url"]
-          end
+          check_for_override(repo, num, x)
           @overrides[num] = x["url"] if x["url"]
         end
       end
     end
+    # rubocop: enable Metrics/ClassLength
 
     #
     # Single repository class.
@@ -266,6 +300,7 @@ module Zypper
         @key = read_key
       end
 
+      # rubocop: disable Metrics/AbcSize
       def upgrade!(version, args = {})
         @old_url ||= url
         @old_alias ||= self.alias
@@ -276,6 +311,7 @@ module Zypper
         self.alias = self.alias.gsub(/\d\d\.\d/, version) if args[:alias]
         self.name = name.gsub(/\d\d\.\d/, version) if args[:name]
       end
+      # rubocop: enable Metrics/AbcSize
 
       def upgraded?(item = :url)
         !send("old_#{item}").nil? && (send("old_#{item}") != send(item))

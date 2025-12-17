@@ -12,6 +12,7 @@ module Zypper
     # achieve the request..
     #
     class Request
+      # rubocop: disable Style/ClassVars
       def self.build(repo, timeout)
         @@registry ||= load_requests
 
@@ -19,6 +20,7 @@ module Zypper
 
         Object.const_get(find_class(repo)).new(repo, timeout)
       end
+      # rubocop: enable Style/ClassVars
 
       def self.protocols
         load_requests.keys

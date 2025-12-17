@@ -22,21 +22,9 @@ module Zypper
                         "15.0", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6",
                         "16.0"]
 
-        if options.allow_unstable
-          raise NoUnstableVersionAvailable if UNSTABLE_VERSION.empty?
+        load_unstable if options.allow_unstable
 
-          @os_versions << UNSTABLE_VERSION
-          @unstable = true
-        end
-
-        fname = if File.exist? self.class::OS_RELEASE_FILE
-                  self.class::OS_RELEASE_FILE
-                elsif File.exist? self.class::SUSE_RELEASE_FILE
-                  self.class::SUSE_RELEASE_FILE
-                else
-                  raise ReleaseFileNotFound
-                end
-        @release = IniParse.parse(File.read(fname))
+        @release = IniParse.parse(File.read(release_filename))
         @current_idx = @os_versions.index(@release["__anonymous__"]["VERSION"].delete('"'))
 
         return unless options.version
@@ -110,6 +98,25 @@ module Zypper
         %w[cx16 lahf_lm popcnt sse4_1 sse4_2 ssse3].reduce(true) do |res, f|
           flags.include?(f) && res
         end
+      end
+
+      private
+
+      def release_filename
+        if File.exist? self.class::OS_RELEASE_FILE
+          self.class::OS_RELEASE_FILE
+        elsif File.exist? self.class::SUSE_RELEASE_FILE
+          self.class::SUSE_RELEASE_FILE
+        else
+          raise ReleaseFileNotFound
+        end
+      end
+
+      def load_unstable
+        raise NoUnstableVersionAvailable if UNSTABLE_VERSION.empty?
+
+        @os_versions << UNSTABLE_VERSION
+        @unstable = true
       end
     end
   end
