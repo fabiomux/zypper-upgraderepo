@@ -161,8 +161,9 @@ module Zypper
 
         @view_class.footer @repos.max_col
       end
+      def upgrade_repos(version)
+        check_requirements(version)
 
-      def upgrade_repos(_version)
         @view_class.header(@repos.max_col, upgrade: true)
 
         @repos.each_with_number do |repo, num|
