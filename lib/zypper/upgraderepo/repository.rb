@@ -73,7 +73,6 @@ module Zypper
         end
       end
 
-      # TODO: Allow --only-used/unused param as filter
       def each_with_number(options = {})
         f_o = filter_options(options)
 
@@ -116,6 +115,7 @@ module Zypper
         @only_enabled = options.only_enabled
         @only_invalid = options.only_invalid
         @only_protocols = options.only_protocols
+        @only_used = options.only_used
         @overrides = options.overrides
         @upgrade_options = { alias: options.alias, name: options.name }
       end
@@ -125,18 +125,20 @@ module Zypper
           only_repo: options[:only_repo].nil? ? @only_repo : options[:only_repo],
           only_enabled: options[:only_enabled].nil? ? @only_enabled : options[:only_enabled],
           only_invalid: options[:only_invalid].nil? ? @only_invalid : options[:only_invalid],
-          only_protocols: options[:only_protocols].nil? ? @only_protocols : options[:only_protocols]
+          only_protocols: options[:only_protocols].nil? ? @only_protocols : options[:only_protocols],
+          only_used: options[:only_used].nil? ? @only_used : options[:only_used]
         }
       end
 
-      # rubocop: disable Metrics/CyclomaticComplexity
+      # rubocop: disable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
       def next_repo?(repo, num, options)
         (options[:only_repo] && !options[:only_repo].include?(num)) ||
           (options[:only_enabled] && !repo.enabled?) ||
           (options[:only_invalid] && repo.available?) ||
-          (options[:only_protocols] && !options[:only_protocols].include?(repo.protocol))
+          (options[:only_protocols] && !options[:only_protocols].include?(repo.protocol)) ||
+          (options[:only_used] && repo.unused?)
       end
-      # rubocop: enable Metrics/CyclomaticComplexity
+      # rubocop: enable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
 
       def group_for_url
         dups = {}

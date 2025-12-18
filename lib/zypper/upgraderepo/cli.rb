@@ -10,7 +10,7 @@ module Zypper
       :operation, :backup_path, :only_enabled, :alias, :name, :hint,
       :overrides, :version, :sorting_by, :view, :only_repo, :timeout,
       :exit_on_fail, :overrides_filename, :only_invalid, :only_protocols,
-      :allow_unstable
+      :allow_unstable, :only_used
     )
 
     #
@@ -36,6 +36,7 @@ module Zypper
         options.only_invalid = false
         options.only_protocols = nil
         options.allow_unstable = false
+        options.only_used = nil
 
         opt_parser = OptionParser.new do |opt|
           opt.banner = if ENV["ZYPPER_UPGRADEREPO"]
@@ -159,6 +160,10 @@ module Zypper
           opt.on("--only-protocols <PROTOCOL>[,<PROTOCOL2>,...]", Array,
                  "Show only from protocols (supported: #{Request.protocols.join(",")})") do |o|
             options.only_protocols = o
+          end
+
+          opt.on("--only-used", "Show only used repositories") do |_o|
+            options.only_used = true
           end
 
           opt.separator ""
