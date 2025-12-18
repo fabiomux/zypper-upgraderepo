@@ -75,7 +75,7 @@ module Zypper
         @view_class.unused_header(@repos.max_col)
         @view_class.separator(@repos.max_col)
         @repos.each_with_number do |repo, num|
-          next unless @repos.unused?(num)
+          next unless repo.unused?
 
           ucount += 1
           @view_class.unused_item(num, ucount, repo, @repos.max_col)

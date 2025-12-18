@@ -90,10 +90,6 @@ module Zypper
         end
       end
 
-      def unused?(num)
-        `zypper -q pa -i -r #{num} 2>/dev/null|grep "^i"|wc -l`.strip.to_i.zero?
-      end
-
       def duplicates
         group_for_url.delete_if { |_, v| v.length < 2 }
       end
@@ -324,6 +320,14 @@ module Zypper
         raise SystemUpdateRunning, { pid: pid, process: process } if pid
 
         @repo.save(@filename)
+      end
+
+      def unused?
+        `zypper -q pa -i -r "#{name}" 2>/dev/null|grep -c "^i"`.strip.to_i.zero?
+      end
+
+      def used?
+        !unused?
       end
 
       private
