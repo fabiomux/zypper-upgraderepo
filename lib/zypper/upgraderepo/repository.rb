@@ -195,7 +195,6 @@ module Zypper
           elsif r =~ /^\ *\?.*/
             select_for_any(r) { |_, num| res.push num }
           else
-            puts r
             select_for_name(r) { |_, num| res.push num }
           end
         end
