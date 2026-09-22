@@ -342,8 +342,8 @@ module Zypper
       end
 
       def libzypp_process
-        libpath = `ldd /usr/bin/zypper | grep "libzypp.so"`.split(" => ")[1].split.shift
-        process = `sudo lsof #{libpath} | tail -n 1`
+        libpath = `ldd /usr/bin/zypper 2> /dev/null | grep "libzypp.so"`.split(" => ")[1].split.shift
+        process = `sudo lsof #{libpath} 2> /dev/null | tail -n 1`
         process, pid = process.split
         [process, pid]
       end
