@@ -324,7 +324,7 @@ module Zypper
       end
 
       def unused?
-        `zypper -q pa -i -r "#{name}" 2>/dev/null|grep -c "^i"`.strip.to_i.zero?
+        `zypper --plus-content "#{name}" -q pa -i -r "#{name}" 2>/dev/null|grep -c "^i\\|v"`.strip.to_i.zero?
       end
 
       def used?
